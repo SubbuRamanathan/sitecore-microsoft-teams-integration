@@ -1,0 +1,134 @@
+﻿---
+ID: "01877dbb-2493-4a85-99aa-520d6d8e6b79"
+Parent: "93b3262d-148d-4174-b3bf-4ecd47cee484"
+Template: "dd22f1b3-bd87-4db2-9e7d-f7a496888d43"
+Path: /sitecore/system/Modules/PowerShell/Script Library/Sitecore + Microsoft Teams Integration/Workflow/Awaiting Approval Notification
+SharedFields:
+- ID: "b1a94ff0-6897-47c0-9c51-aa6acb80b1f0"
+  Hint: Script
+  Value: |
+    Import-Function Get-TeamsAction
+    Import-Function Get-HostUrl
+    
+    New-UsingBlock (New-Object -TypeName "Sitecore.SecurityModel.SecurityDisabler") {
+        $channelUri = [Sitecore.Configuration.Settings]::GetSetting("Teams.WebhookURI")
+    
+        $workflowEvent = $SitecoreContextItem | Get-ItemWorkflowEvent | Select-Object -Last 1
+        $previousState = Get-Item -Path "master:" -ID $workflowEvent.OldState
+        $currentState = Get-Item -Path "master:" -ID $workflowEvent.NewState
+        $comments = $workflowEvent.CommentFields["Comments"]
+    
+        $user = Get-User -Id $workflowEvent.User
+        $database = Get-Database -Name "master"
+        $id = $SitecoreContextItem.ID.ToString().ToUpper()
+        $encodedId = [System.Web.HttpUtility]::UrlEncode($id)
+        $language = $SitecoreContextItem.Language.Name
+        $version = $SitecoreContextItem.Version
+    
+    
+        $title = "$($user.Profile.FullName)($($user.Name)) has transitioned '$($SitecoreContextItem.DisplayName)' from '$($previousState.Name)' state to '$($currentState.Name)' state"
+        $activitySubtitle = "Please review and approve the changes"
+        $publicDomain = "https://www.sitecore.com" #Needs to be a publicly accessible domain (sitecore.com will work if using default profile pictures)
+        $userProfilePicture = $publicDomain + "/~/icon/" + $user.Profile.Portrait
+    
+        $hostUrl = Get-HostUrl
+    
+        $commandUrl = "$hostUrl/sitecore/shell/feeds/action.aspx?c=Workflow&id=$encodedId&la=$language&v=$version&nc=1&cmd="
+        $editUrl = "$hostUrl/sitecore/shell/sitecore/content/Applications/Content Editor.aspx?id=$($encodedId)&amp;la=$($language)&amp;fo=$($encodedId)"
+    
+        $workflowDetails = @(
+        @{
+            "activityTitle"= $title
+            "activitySubtitle"= $activitySubtitle
+            "activityImage"= $userProfilePicture
+            "facts"= @(
+            @{
+                "name"= "Item Path"
+                "value"= $SitecoreContextItem.Paths.FullPath
+            }, 
+            @{
+                "name"= "Language"
+                "value"= "$language"
+            }, 
+            @{
+                "name"= "Comments"
+                "value"= "$comments"
+            }
+            )
+            "markdown"= $true
+        }
+        )
+    
+        $actions = @()
+    
+        $workflowItemId = $currentState.Parent.ID.ToString()
+        $commands = $database.WorkflowProvider.GetWorkflow($workflowItemId).GetCommands($workflowEvent.NewState)
+        foreach($command in $commands){
+            $actionUrl = $commandUrl + [System.Web.HttpUtility]::UrlEncode($command.CommandID)
+            $actions += Get-TeamsAction -actionName $command.DisplayName -actionUrl $actionUrl
+        }
+        if(Get-Layout $SitecoreContextItem)
+        {
+            $previewUrl = "$hostUrl/?sc_itemid=$($encodedId)&amp;sc_mode=preview&amp;sc_lang=$($language)"
+            $actions += Get-TeamsAction -actionName "Preview" -actionUrl $previewUrl
+        }
+        $actions += Get-TeamsAction -actionName "Edit" -actionUrl $editUrl
+    
+        $messageObject = [PSCustomObject][Ordered]@{
+            '@type'= 'MessageCard'
+            '@context'= 'http://schema.org/extensions'
+            'themeColor'= 'ffc107'
+            'summary'= 'Workflow Notification'
+            'sections'= $workflowDetails
+            'potentialAction' = $actions
+        }
+        $message = ConvertTo-Json $messageObject -Depth 100
+    
+        $parameters = @{
+            "URI"         = $channelUri
+            "Method"      = 'POST'
+            "Body"        = $message
+            "ContentType" = 'application/json'
+        }
+    
+        try{
+            Invoke-RestMethod @parameters
+        }
+        catch{
+            Write-Log "StatusCode:" $_.Exception.Response.StatusCode.value__ 
+            Write-Log "StatusDescription:" $_.Exception.Response.StatusDescription
+            Write-Log "Posted Response:"
+            Write-Log ($message | Out-String) -Verbose
+            Show-Alert -Title "Notification failed to post to 'Workflow Moderators' Teams Channel"
+        }
+    }
+    Close-Window
+- ID: "ba3f86a2-4a1c-4d78-b63d-91c2779c1b5e"
+  Hint: __Sortorder
+  Value: 100
+Languages:
+- Language: en
+  Versions:
+  - Version: 1
+    Fields:
+    - ID: "25bed78c-4957-4165-998a-ca1b52f67497"
+      Hint: __Created
+      Value: 20200725T040127Z
+    - ID: "52807595-0f8f-4b20-8d2a-cb71d28c6103"
+      Hint: __Owner
+      Value: |
+        sitecore\Admin
+    - ID: "5dd74568-4d4b-44c1-b513-0af5f4cda34f"
+      Hint: __Created by
+      Value: |
+        sitecore\Admin
+    - ID: "8cdc337e-a112-42fb-bbb4-4143751e123f"
+      Hint: __Revision
+      Value: "ba5fce00-7ed1-4ee4-b798-5cfee73f41cd"
+    - ID: "badd9cf9-53e0-4d0c-bcc0-2d784c282f6a"
+      Hint: __Updated by
+      Value: |
+        sitecore\Admin
+    - ID: "d9cf14b1-fa16-4ba6-9288-e8a174d4d522"
+      Hint: __Updated
+      Value: 20200815T093728Z
