@@ -11,6 +11,13 @@
 *.itempackage
 *.sicpackage
 *.sqlite
+*.suo
+*.user
+*.pubxml
 .config/*
 .sitecore/*
 .vscode/*
+applicationhost.config
+bin/
+obj/
+packages/

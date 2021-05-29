@@ -1,8 +1,8 @@
 ﻿---
 ID: "2a43a19c-73f6-485b-8687-4031d2e48828"
-Parent: "022ba0ab-16a1-4226-89eb-af1581bc323c"
+Parent: "2da9e563-d99f-49ca-8e7b-b067c73c1d3f"
 Template: "dd22f1b3-bd87-4db2-9e7d-f7a496888d43"
-Path: "/sitecore/system/Modules/PowerShell/Script Library/Sitecore + Microsoft Teams Integration/Functions/Inject-Scripts"
+Path: "/sitecore/system/Modules/PowerShell/Script Library/Sitecore + Microsoft Teams Integration/Functions/Setup/Inject-Scripts"
 SharedFields:
 - ID: "b1a94ff0-6897-47c0-9c51-aa6acb80b1f0"
   Hint: Script
@@ -11,6 +11,9 @@ SharedFields:
         #Invoke-Javascript -Script 'jQuery.ajax({async: false,url: "/sitecore modules/MicrosoftTeamsIntegration/main.js",dataType: "script"});'
         Invoke-Javascript -Script 'var xhr=new XMLHttpRequest;xhr.open("GET","/sitecore%20modules/MicrosoftTeamsIntegration/main.js",!1),xhr.onreadystatechange=function(){var e=document.createElement("script");e.type="text/javascript",e.text=xhr.responseText,document.body.appendChild(e)},xhr.send();'
     }
+- ID: "ba3f86a2-4a1c-4d78-b63d-91c2779c1b5e"
+  Hint: __Sortorder
+  Value: 700
 Languages:
 - Language: en
   Versions:
@@ -29,11 +32,11 @@ Languages:
         sitecore\Admin
     - ID: "8cdc337e-a112-42fb-bbb4-4143751e123f"
       Hint: __Revision
-      Value: "5c01e153-8d0d-4d3e-933e-88a0945daefe"
+      Value: "caf0924e-3094-4089-b0cd-a34e997ca9ca"
     - ID: "badd9cf9-53e0-4d0c-bcc0-2d784c282f6a"
       Hint: __Updated by
       Value: |
         sitecore\Admin
     - ID: "d9cf14b1-fa16-4ba6-9288-e8a174d4d522"
       Hint: __Updated
-      Value: 20210525T215840Z
+      Value: 20210528T150648Z

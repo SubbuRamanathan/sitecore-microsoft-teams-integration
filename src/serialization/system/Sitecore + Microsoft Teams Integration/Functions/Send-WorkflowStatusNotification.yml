@@ -104,6 +104,9 @@ SharedFields:
             Show-Alert -Title "Notification failed to post to 'Workflow Moderators' Teams Channel"
         }
     }
+- ID: "ba3f86a2-4a1c-4d78-b63d-91c2779c1b5e"
+  Hint: __Sortorder
+  Value: 900
 Languages:
 - Language: en
   Versions:
@@ -122,11 +125,11 @@ Languages:
         sitecore\Admin
     - ID: "8cdc337e-a112-42fb-bbb4-4143751e123f"
       Hint: __Revision
-      Value: "a8f26e1c-bc52-4bc3-9207-05fbe5bcf066"
+      Value: "918dd4c3-c963-4e76-954f-44b0678adb02"
     - ID: "badd9cf9-53e0-4d0c-bcc0-2d784c282f6a"
       Hint: __Updated by
       Value: |
         sitecore\Admin
     - ID: "d9cf14b1-fa16-4ba6-9288-e8a174d4d522"
       Hint: __Updated
-      Value: 20200815T093745Z
+      Value: 20210528T150402Z

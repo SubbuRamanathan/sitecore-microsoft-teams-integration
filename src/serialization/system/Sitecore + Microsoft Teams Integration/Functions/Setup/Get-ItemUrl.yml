@@ -1,8 +1,8 @@
 ﻿---
 ID: "dc4e4a4b-80b2-4b47-a5cc-38050840f985"
-Parent: "022ba0ab-16a1-4226-89eb-af1581bc323c"
+Parent: "2da9e563-d99f-49ca-8e7b-b067c73c1d3f"
 Template: "dd22f1b3-bd87-4db2-9e7d-f7a496888d43"
-Path: "/sitecore/system/Modules/PowerShell/Script Library/Sitecore + Microsoft Teams Integration/Functions/Get-ItemUrl"
+Path: "/sitecore/system/Modules/PowerShell/Script Library/Sitecore + Microsoft Teams Integration/Functions/Setup/Get-ItemUrl"
 SharedFields:
 - ID: "b1a94ff0-6897-47c0-9c51-aa6acb80b1f0"
   Hint: Script
@@ -26,6 +26,9 @@ SharedFields:
         
         $result[0][0]
     }
+- ID: "ba3f86a2-4a1c-4d78-b63d-91c2779c1b5e"
+  Hint: __Sortorder
+  Value: 500
 Languages:
 - Language: en
   Versions:
@@ -44,14 +47,14 @@ Languages:
         sitecore\Admin
     - ID: "8cdc337e-a112-42fb-bbb4-4143751e123f"
       Hint: __Revision
-      Value: "6ade3acc-c019-40fb-b75e-7f05a3403a35"
+      Value: "8ccc300f-e85c-4228-a5d9-df67b57671d7"
     - ID: "badd9cf9-53e0-4d0c-bcc0-2d784c282f6a"
       Hint: __Updated by
       Value: |
         sitecore\Admin
     - ID: "d9cf14b1-fa16-4ba6-9288-e8a174d4d522"
       Hint: __Updated
-      Value: 20200808T184258Z
+      Value: 20210528T150452Z
 - Language: "fr-CA"
   Versions:
   - Version: 1

@@ -1,14 +1,12 @@
 ﻿---
-ID: "e4d04180-d7fd-4617-8348-06feae18430f"
-Parent: "00c82594-5458-4c18-895d-9c53e23d7ea4"
-Template: "dd22f1b3-bd87-4db2-9e7d-f7a496888d43"
-Path: /sitecore/templates/Branches/Modules/Microsoft Teams Integration/Webhook Settings/$name/Scripts/Edit
+ID: "2da9e563-d99f-49ca-8e7b-b067c73c1d3f"
+Parent: "022ba0ab-16a1-4226-89eb-af1581bc323c"
+Template: "ab154d3d-1126-4ab4-ac21-8b86e6bd70ea"
+Path: /sitecore/system/Modules/PowerShell/Script Library/Sitecore + Microsoft Teams Integration/Functions/Setup
 SharedFields:
-- ID: "b1a94ff0-6897-47c0-9c51-aa6acb80b1f0"
-  Hint: Script
-  Value: |
-    Import-Function Edit-Webhook
-    Edit-Webhook -WebhookID "{webhookid}"
+- ID: "ba3f86a2-4a1c-4d78-b63d-91c2779c1b5e"
+  Hint: __Sortorder
+  Value: 0
 Languages:
 - Language: en
   Versions:
@@ -16,7 +14,7 @@ Languages:
     Fields:
     - ID: "25bed78c-4957-4165-998a-ca1b52f67497"
       Hint: __Created
-      Value: 20210521T171446Z
+      Value: 20210528T150345Z
     - ID: "52807595-0f8f-4b20-8d2a-cb71d28c6103"
       Hint: __Owner
       Value: |
@@ -27,11 +25,11 @@ Languages:
         sitecore\Admin
     - ID: "8cdc337e-a112-42fb-bbb4-4143751e123f"
       Hint: __Revision
-      Value: "ddb8efb6-90cc-4098-a238-ec29870bb6fc"
+      Value: "3730b234-3c73-4ae7-9eb1-3f13e8a9b238"
     - ID: "badd9cf9-53e0-4d0c-bcc0-2d784c282f6a"
       Hint: __Updated by
       Value: |
         sitecore\Admin
     - ID: "d9cf14b1-fa16-4ba6-9288-e8a174d4d522"
       Hint: __Updated
-      Value: 20210528T211208Z
+      Value: 20210528T150402Z

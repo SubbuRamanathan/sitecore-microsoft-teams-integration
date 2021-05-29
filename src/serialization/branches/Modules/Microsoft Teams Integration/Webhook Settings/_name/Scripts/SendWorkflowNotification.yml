@@ -1,14 +1,14 @@
 ﻿---
-ID: "e4d04180-d7fd-4617-8348-06feae18430f"
+ID: "df4bd8ba-a6d3-498b-b1c8-d9f5448d2308"
 Parent: "00c82594-5458-4c18-895d-9c53e23d7ea4"
 Template: "dd22f1b3-bd87-4db2-9e7d-f7a496888d43"
-Path: /sitecore/templates/Branches/Modules/Microsoft Teams Integration/Webhook Settings/$name/Scripts/Edit
+Path: /sitecore/templates/Branches/Modules/Microsoft Teams Integration/Webhook Settings/$name/Scripts/SendWorkflowNotification
 SharedFields:
 - ID: "b1a94ff0-6897-47c0-9c51-aa6acb80b1f0"
   Hint: Script
   Value: |
-    Import-Function Edit-Webhook
-    Edit-Webhook -WebhookID "{webhookid}"
+    Import-Function Send-WorkflowStatusChangeNotification
+    Send-WorkflowStatusChangeNotification -WebhookID "{webhookid}"
 Languages:
 - Language: en
   Versions:
@@ -16,7 +16,7 @@ Languages:
     Fields:
     - ID: "25bed78c-4957-4165-998a-ca1b52f67497"
       Hint: __Created
-      Value: 20210521T171446Z
+      Value: 20210528T193003Z
     - ID: "52807595-0f8f-4b20-8d2a-cb71d28c6103"
       Hint: __Owner
       Value: |
@@ -27,11 +27,11 @@ Languages:
         sitecore\Admin
     - ID: "8cdc337e-a112-42fb-bbb4-4143751e123f"
       Hint: __Revision
-      Value: "ddb8efb6-90cc-4098-a238-ec29870bb6fc"
+      Value: "924c0cb7-7834-4fb7-8f17-fb910e778a15"
     - ID: "badd9cf9-53e0-4d0c-bcc0-2d784c282f6a"
       Hint: __Updated by
       Value: |
         sitecore\Admin
     - ID: "d9cf14b1-fa16-4ba6-9288-e8a174d4d522"
       Hint: __Updated
-      Value: 20210528T211208Z
+      Value: 20210528T211216Z

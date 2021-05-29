@@ -10,8 +10,8 @@ SharedFields:
 - ID: "b1a94ff0-6897-47c0-9c51-aa6acb80b1f0"
   Hint: Script
   Value: |
-    Import-Function Delete-Item
-    Delete-Item -ItemID "$webhookid"
+    Import-Function Delete-Webhook
+    Delete-Webhook -WebhookID "{webhookid}"
 Languages:
 - Language: en
   Versions:
@@ -30,11 +30,11 @@ Languages:
         sitecore\Admin
     - ID: "8cdc337e-a112-42fb-bbb4-4143751e123f"
       Hint: __Revision
-      Value: "34284066-6933-4c62-87df-7cc3bd9092b4"
+      Value: "31bbea74-5c3c-47cc-9195-167dffba6f19"
     - ID: "badd9cf9-53e0-4d0c-bcc0-2d784c282f6a"
       Hint: __Updated by
       Value: |
         sitecore\Admin
     - ID: "d9cf14b1-fa16-4ba6-9288-e8a174d4d522"
       Hint: __Updated
-      Value: 20210521T185853Z
+      Value: 20210528T211200Z

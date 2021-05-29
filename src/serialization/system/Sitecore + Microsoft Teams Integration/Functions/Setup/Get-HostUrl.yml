@@ -1,8 +1,8 @@
 ﻿---
 ID: "bf3c2af8-29fd-4be9-8d05-cff7adbf5e04"
-Parent: "022ba0ab-16a1-4226-89eb-af1581bc323c"
+Parent: "2da9e563-d99f-49ca-8e7b-b067c73c1d3f"
 Template: "dd22f1b3-bd87-4db2-9e7d-f7a496888d43"
-Path: "/sitecore/system/Modules/PowerShell/Script Library/Sitecore + Microsoft Teams Integration/Functions/Get-HostUrl"
+Path: "/sitecore/system/Modules/PowerShell/Script Library/Sitecore + Microsoft Teams Integration/Functions/Setup/Get-HostUrl"
 SharedFields:
 - ID: "b1a94ff0-6897-47c0-9c51-aa6acb80b1f0"
   Hint: Script
@@ -16,6 +16,9 @@ SharedFields:
         $startItemUri = [System.Uri]$startItemUrl
         return $startItemUri.ToString().Replace($startItemUri.PathAndQuery, '')
     }
+- ID: "ba3f86a2-4a1c-4d78-b63d-91c2779c1b5e"
+  Hint: __Sortorder
+  Value: 400
 Languages:
 - Language: en
   Versions:
@@ -34,11 +37,11 @@ Languages:
         sitecore\Admin
     - ID: "8cdc337e-a112-42fb-bbb4-4143751e123f"
       Hint: __Revision
-      Value: "d4b281b9-6677-4753-910a-ce7aff019364"
+      Value: "01a23cc1-5131-4f93-8e6f-364005899de2"
     - ID: "badd9cf9-53e0-4d0c-bcc0-2d784c282f6a"
       Hint: __Updated by
       Value: |
         sitecore\Admin
     - ID: "d9cf14b1-fa16-4ba6-9288-e8a174d4d522"
       Hint: __Updated
-      Value: 20200815T093822Z
+      Value: 20210528T150446Z

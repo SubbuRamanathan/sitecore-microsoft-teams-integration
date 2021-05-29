@@ -1,9 +1,6 @@
-﻿using Sitecore;
-using Sitecore.Data;
+﻿using Sitecore.Data;
 using Sitecore.Data.Items;
 using Sitecore.Diagnostics;
-using Sitecore.Globalization;
-using Sitecore.Pipelines;
 using Sitecore.Text;
 using Sitecore.Web.UI.Sheer;
 using Sitecore.Workflows.Simple;
@@ -11,9 +8,7 @@ using Spe;
 using Spe.Core.Extensions;
 using Spe.Core.Settings.Authorization;
 using Spe.Core.Utility;
-using System;
 using System.Globalization;
-using System.Web.UI;
 
 //Required to mitigate 'Workflow Approvals doesn't work in Workflow Feed Urls when the Workflow Command has a PowerShell Script Workflow Action' issue - https://github.com/SitecorePowerShell/Console/issues/1204
 //Fixed in Sitecore Powershell Extensions v6.2 (Not Required if using SPE v6.2+)
