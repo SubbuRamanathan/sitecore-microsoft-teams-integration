@@ -7,59 +7,8 @@ SharedFields:
 - ID: "b1a94ff0-6897-47c0-9c51-aa6acb80b1f0"
   Hint: Script
   Value: |
-    Import-Function Inject-Scripts
-    
-    Inject-Scripts
-    
-    $webhookItems = Get-ChildItem -Path "master:\sitecore\system\Modules\PowerShell\Script Library\Sitecore + Microsoft Teams Integration\Webhooks"
-    
-    $command = "item:executescript(script={0},scriptDb=master)"
-    
-    $generalTab = @(
-    	@{ Tab = "GENERAL"; Name = "webhooksTitle"; Title = "Teams Endpoints"; Editor = "info"; ParentGroupId = 1; HideOnValue = "0"; }
-    )
-    
-    if($webhookItems.Count -eq 0){
-       $generalTab += @{ Tab = "GENERAL"; Name = "webhooksInfo"; Title = ""; Value = "No Teams Endpoint configured. Please click on 'Add New Teams Endpoint' to add new endpoint" ; Editor = "info"; ParentGroupId = 1; HideOnValue = "0"; }
-    }
-    
-    $webhookItems | ForEach-Object { 
-        $editEndPointScript = Get-Item -Path "master:$($_.Paths.FullPath)/Scripts/Edit"
-        $deleteEndPointScript = Get-Item -Path "master:$($_.Paths.FullPath)/Scripts/Delete"
-        $options = [ordered]@{"Edit"= $command -f $editEndPointScript.ID.ToString() ;"Delete"= $command -f $deleteEndPointScript.ID.ToString() }
-        $generalTab += @{ Tab = "GENERAL"; Name=$_.Name; Value=$_.Name; Title = ""; Editor = "info"; Columns=4; ParentGroupId = 1; HideOnValue = "0"; }
-        $generalTab += @{ Tab = "GENERAL"; Name="$($_.Name)_Options"; Title = ""; Options = $options; Editor = "link"; Columns=6; ParentGroupId = 1; HideOnValue = "0"; }
-    }
-    
-    
-    $generalTab += @{ Tab = "GENERAL"; Name = "pagespeedApiKey"; Title = "Google PageSpeed API Key"; Placeholder="Enter Google PageSpeed Insights API Key"; ParentGroupId=1; HideOnValue = "0"; }
-    
-    $aboutTab = @(
-    	@{ Tab = "ABOUT"; Name = "About"; Value = "$webhookEndPointsDescription"; Editor = "info" }
-    )
-    
-    $allTabs = $generalTab + $aboutTab
-    
-    $dialogProps = @{
-        Title = "Sitecore + Microsoft Teams Integration"
-        Description = "Lists all the notification settings with options to configure"
-        Width = 500 
-        Height = 600
-        OkButtonName = "Add New Teams Endpoint"
-        CancelButtonName = "Save & Close"
-        ShowHints = $true
-        Icon = "office/16x16/graph_triangle.png"
-        Parameters = $allTabs
-    }
-    
-    $result = Read-Variable @dialogProps
-    
-    if($result -ne "ok") {
-        Invoke-Javascript "window.open(document.referrer, '_self')"
-    }
-    else{
-        Import-Function Create-Webhook
-    }
+    Import-Function Launch-ModuleOptions
+    Launch-ModuleOptions
 Languages:
 - Language: en
   Versions:
@@ -78,11 +27,11 @@ Languages:
         sitecore\Admin
     - ID: "8cdc337e-a112-42fb-bbb4-4143751e123f"
       Hint: __Revision
-      Value: "643b27a8-a869-4275-a447-7f1b284a214a"
+      Value: "0c51c0fd-7e29-46eb-9bf2-bb7bde8a5629"
     - ID: "badd9cf9-53e0-4d0c-bcc0-2d784c282f6a"
       Hint: __Updated by
       Value: |
         sitecore\Admin
     - ID: "d9cf14b1-fa16-4ba6-9288-e8a174d4d522"
       Hint: __Updated
-      Value: 20210525T213602Z
+      Value: 20210530T014155Z

@@ -7,8 +7,8 @@ SharedFields:
 - ID: "b1a94ff0-6897-47c0-9c51-aa6acb80b1f0"
   Hint: Script
   Value: |
-    Import-Function Edit-Webhook
-    Edit-Webhook -WebhookID "{webhookid}"
+    Import-Function Configure-Webhook
+    Configure-Webhook -WebhookID "{webhookid}"
 Languages:
 - Language: en
   Versions:
@@ -27,11 +27,11 @@ Languages:
         sitecore\Admin
     - ID: "8cdc337e-a112-42fb-bbb4-4143751e123f"
       Hint: __Revision
-      Value: "ddb8efb6-90cc-4098-a238-ec29870bb6fc"
+      Value: "1aed5a68-6f5c-42c7-bb84-2179cabc4eda"
     - ID: "badd9cf9-53e0-4d0c-bcc0-2d784c282f6a"
       Hint: __Updated by
       Value: |
         sitecore\Admin
     - ID: "d9cf14b1-fa16-4ba6-9288-e8a174d4d522"
       Hint: __Updated
-      Value: 20210528T211208Z
+      Value: 20210530T010809Z
