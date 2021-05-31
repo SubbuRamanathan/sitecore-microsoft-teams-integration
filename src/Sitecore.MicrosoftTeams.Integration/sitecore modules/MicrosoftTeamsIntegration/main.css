@@ -1,0 +1,33 @@
+div[id*='publishNotificationSettings'], div[id*='webhookName'], div[id*='testEndpointSchema']	 {
+    display: none;
+}
+div[id^='variable_publish']:not([id^='variable_publishInfo']) > span.varHint {
+	text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+}
+div[id^='variable_publishDeleteOption']:first-child {
+    display: none;
+}
+#Tabstrip_tabpage_2 div:nth-child(10)[id*="publishDeleteOption"] {
+    display: none;
+}
+div[id*='workflowCommands'] .checkListActions {
+    display: none;
+}
+div[id*='workflowCommands'] .scContentControlChecklist{
+	border: none;
+	height: auto;
+}
+div[id*='workflowCommands'] label{
+	font: inherit;
+}
+div[id*='workflowState'] span.varHint{
+	margin: 0px;
+}
+div[id*='workflowState'] div.validator{
+	display: none;
+}
+div[id*='workflowCommands'], div[id*='workflowState']{
+	padding-left: 2%;
+}
