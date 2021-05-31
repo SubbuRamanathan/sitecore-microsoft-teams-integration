@@ -13,7 +13,7 @@ SharedFields:
             [string]$WebhookID
         )
         
-        $response = Show-Confirm "Are you sure you want to delete this Teams Endpoint Configuration"
+        $response = Show-YesNoCancel -Title "Are you sure you want to delete this Teams Endpoint Configuration" -Height 100 -Width 400
         if($response -eq 'yes'){
             Import-Function Delete-NotificationAction
             
@@ -24,8 +24,12 @@ SharedFields:
             }
             
             $webhookItem | Remove-Item -Recurse
+            
+            Invoke-Javascript "window.top.location.reload()"
         }
-        #Invoke-Javascript "window.location.reload()"
+        else{
+            Close-Window
+        }
     }
 - ID: "ba3f86a2-4a1c-4d78-b63d-91c2779c1b5e"
   Hint: __Sortorder
@@ -48,11 +52,11 @@ Languages:
         sitecore\Admin
     - ID: "8cdc337e-a112-42fb-bbb4-4143751e123f"
       Hint: __Revision
-      Value: "63244fa6-2755-4705-be98-a4ba2309e665"
+      Value: "937aeb48-22eb-40aa-819b-61ce7ba27e46"
     - ID: "badd9cf9-53e0-4d0c-bcc0-2d784c282f6a"
       Hint: __Updated by
       Value: |
         sitecore\Admin
     - ID: "d9cf14b1-fa16-4ba6-9288-e8a174d4d522"
       Hint: __Updated
-      Value: 20210530T035311Z
+      Value: 20210530T181925Z

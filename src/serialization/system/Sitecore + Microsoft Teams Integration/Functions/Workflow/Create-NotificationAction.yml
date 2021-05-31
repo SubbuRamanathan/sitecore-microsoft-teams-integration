@@ -13,14 +13,17 @@ SharedFields:
             [ID]$WorkflowCommandItemID,
     		[Item]$WebhookItem
         )
-        	
-    	$scriptItem = Get-Item -Path "master:$($WebhookItem.ItemPath)\Scripts\SendWorkflowNotification"
     	
     	$workflowCommandItem = Get-Item master: -ID $WorkflowCommandItemID
     	$scriptActionPath = "master:$($workflowCommandItem.ItemPath)/Send-TeamsNotification-$($WebhookItem.ID.ToShortID())"
-    	$scriptActionTemplate = Get-Item -Path "master:" -ID "{02BD31B0-CED3-46F4-AB42-11BDFD8D967C}"
-    	$scriptAction = New-Item -ItemType $scriptActionTemplate.ItemPath -Path $scriptActionPath
-    	$scriptAction.Script = $scriptItem.ID
+    	
+    	if(-Not(Test-Path -Path $scriptActionPath)){
+        	$scriptActionTemplate = Get-Item -Path "master:" -ID "{02BD31B0-CED3-46F4-AB42-11BDFD8D967C}"
+        	$scriptAction = New-Item -ItemType $scriptActionTemplate.ItemPath -Path $scriptActionPath
+        	
+    	    $scriptItem = Get-Item -Path "master:$($WebhookItem.ItemPath)\Scripts\SendWorkflowNotification"
+        	$scriptAction.Script = $scriptItem.ID
+    	}
     }
     
     #Create-NotificationAction -WorkflowCommandItemID "{CF6A557D-0B86-4432-BF47-302A18238E74}" -WebhookItemPath "\sitecore\system\Modules\PowerShell\Script Library\Sitecore + Microsoft Teams Integration\Webhooks\Webhook1"
@@ -45,11 +48,11 @@ Languages:
         sitecore\Admin
     - ID: "8cdc337e-a112-42fb-bbb4-4143751e123f"
       Hint: __Revision
-      Value: "686e7624-ba46-4f15-aca1-a0e21e413f71"
+      Value: "396696aa-c8c4-4f1f-a296-963eecd874b7"
     - ID: "badd9cf9-53e0-4d0c-bcc0-2d784c282f6a"
       Hint: __Updated by
       Value: |
         sitecore\Admin
     - ID: "d9cf14b1-fa16-4ba6-9288-e8a174d4d522"
       Hint: __Updated
-      Value: 20210530T030808Z
+      Value: 20210530T041941Z

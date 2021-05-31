@@ -14,22 +14,27 @@ SharedFields:
         )
     
         Import-Function Create-NotificationAction 
-        Import-Function Delete-NotificationAction 
+        Import-Function Delete-NotificationAction
+        Import-Function Send-TeamsNotification
+        Import-Function Get-HostUrl
     
-        $webhookItem = $null;
+        $selectedWebhookItem = $null;
         
         if($WebhookID){
-            $webhookItem = Get-Item -Path master: -ID $WebhookID
-            $name = $webhookItem.Name
-            $endpoint = $webhookItem.WebhookEndpoint
-        	$publishNotificationSettings = $webhookItem.PublishNotificationSettings
+            $selectedWebhookItem = Get-Item -Path master: -ID $WebhookID
+            $name = $webhookName = $selectedWebhookItem.NickName
+            $endpoint = $selectedWebhookItem.WebhookEndpoint
+        	$publishNotificationSettings = $selectedWebhookItem.PublishNotificationSettings
         }
         
+        $testEndpointSchemaItem = Get-Item -Path master: -ID "{3BA84DF9-3DF7-40BD-8982-9619CB3529D3}"
         $generalTab = @(
-    		@{ Tab="GENERAL"; Name="name"; Title="Name"; Placeholder="Enter a Nick Name for this Endpoint Configuration"; Columns=10; ParentGroupId=1; HideOnValue="0"; },
+    		@{ Tab="GENERAL"; Name="name"; Title="Name"; Placeholder="Enter a Nick Name for this Endpoint Configuration"; Mandatory=$true; Columns=10; ParentGroupId=1; HideOnValue="0"; },
     		@{ Tab="GENERAL"; Name="endpointTitle"; Title="Teams Endpoint URL"; Editor="info"; ParentGroupId=1; HideOnValue="0"; },
-    		@{ Tab="GENERAL"; Name="endpoint"; Title=""; Placeholder="Enter Teams Endpoint URL"; lines=2; Columns=10; ParentGroupId=1; HideOnValue="0"; },
-    		@{ Tab="GENERAL"; Name="testEndpoint"; Title=""; Options=[ordered]@{"Test"= "" }; Editor="link"; Columns=2; ParentGroupId=1; HideOnValue="0"; }
+    		@{ Tab="GENERAL"; Name="webhookName"; Title=""; ParentGroupId=1; HideOnValue="1"; },
+    		@{ Tab="GENERAL"; Name="endpoint"; Title=""; Placeholder="Enter Teams Endpoint URL"; Mandatory=$true; lines=2; Columns=10; ParentGroupId=1; HideOnValue="0"; },
+    		@{ Tab="GENERAL"; Name="testEndpoint"; Title=""; Options=[ordered]@{"Test"= "" }; Editor="link"; Columns=2; ParentGroupId=1; HideOnValue="0"; },
+    		@{ Tab="GENERAL"; Name="testEndpointSchema"; Title=""; Value=$testEndpointSchemaItem.MessageSchema; Editor="info"; ParentGroupId=1; HideOnValue="0"; }
     	)
     
     	$workflowTab = @(
@@ -81,9 +86,8 @@ SharedFields:
     	)
     	
     	if($WebhookID){
-            $webhookItem = Get-Item -Path master: -ID $WebhookID
-            if($webhookItem.PublishNotificationSettings.Length -gt 0){
-                $publishNotificationEntries = $webhookItem.PublishNotificationSettings.Split('&');
+            if($selectedWebhookItem.PublishNotificationSettings.Length -gt 0){
+                $publishNotificationEntries = $selectedWebhookItem.PublishNotificationSettings.Split('&');
                 for ($i=0; $i -lt $publishNotificationEntries.Length; $i++){
                     $contentLocation = [System.Web.HttpUtility]::UrlDecode($publishNotificationEntries[$i].Split('=')[0]);
                     $contentOptions = ([System.Web.HttpUtility]::UrlDecode($publishNotificationEntries[$i].Split('=')[1])).Split('|');
@@ -109,36 +113,50 @@ SharedFields:
     
         $allTabs = $generalTab + $workflowTab + $publishTab
         
+        $okButtonName = @("Create","Update")[$WebhookID -ne $null]
         $dialogProps = @{
         	Title = "Configure Teams Endpoint"
         	Description = "Configure all the notification settings for a new or existing Teams Endpoint"
         	Width = 500 
         	Height = 600
-        	OkButtonName = "Create/Update"
+        	OkButtonName = $okButtonName
         	CancelButtonName = "Cancel"
         	ShowHints = $true
         	Icon = "office/16x16/graph_triangle.png"
         	Parameters = $allTabs
         }
         
-        $result = Read-Variable @dialogProps
+        $result = Read-Variable @dialogProps -Validator {
+            $webhooksItem = Get-Item -Path "master:" -ID "{AAEB319C-3BC9-411F-B0B9-721B5826AD0F}"
+            $existingWebhooks = $webhooksItem.Children | Get-ItemField -ReturnType Field -Name "NickName" | Select-Object -Expand Value
+            $newWebhookName = $variables.name.Value
+            if (($existingWebhooks -contains $newWebhookName) -and ($newWebhookName -ne $variables.webhookName.Value))
+            {
+                $variables.name.Error = "Name already taken. Please enter a different name."
+            }
+        }
         
         if($result -eq "ok") {
             if($WebhookID -eq $null){
-                $webhooksItemPath = "master:\sitecore\system\Modules\PowerShell\Script Library\Sitecore + Microsoft Teams Integration\Webhooks"
+                $webhooksItem = Get-Item -Path "master:" -ID "{AAEB319C-3BC9-411F-B0B9-721B5826AD0F}"
             	$webhookTemplate = Get-Item -Path "master:" -ID "{7AA3E7B4-B8D4-4972-9B94-A82604E977F7}"
-            	$webhookItem = New-Item -ItemType $webhookTemplate.ItemPath -Path "$($webhooksItemPath)\$($name)"
+            	$webhookItemName = [Sitecore.Data.Items.ItemUtil]::ProposeValidItemName($name) 
+                $webhookItemPath = "master:$($webhooksItem.ItemPath)\$($webhookItemName)"
+                if(Test-Path -Path $webhookItemPath){
+                    $webhookItemPath += Get-Random
+                }
+            	$selectedWebhookItem = New-Item -ItemType $webhookTemplate.ItemPath -Path $webhookItemPath
             	
-                Get-ChildItem -Path "master:$($webhookItem.ItemPath)/Scripts" | Foreach-Object {
-                    $updatedScript = $_.Script -replace "{webhookid}", $webhookItem.ID
+                Get-ChildItem -Path "master:$($selectedWebhookItem.ItemPath)/Scripts" | Foreach-Object {
+                    $updatedScript = $_.Script -replace "{webhookid}", $selectedWebhookItem.ID
                     Set-ItemProperty -Path "master:$($_.ItemPath)" -Name "Script" -Value $updatedScript
                 }
             }
-            $webhookItem.Editing.BeginEdit()
-        	$webhookItem.Name=$name
-        	$webhookItem.WebhookEndpoint=$endpoint
-        	$webhookItem.PublishNotificationSettings=$publishNotificationSettings
-        	$webhookItem.Editing.EndEdit()
+            $selectedWebhookItem.Editing.BeginEdit()
+        	$selectedWebhookItem.NickName = $name
+        	$selectedWebhookItem.WebhookEndpoint = $endpoint
+        	$selectedWebhookItem.PublishNotificationSettings = $publishNotificationSettings
+        	$selectedWebhookItem.Editing.EndEdit()
             
             $selectedWorkflowCommands=@();
         	for($i = 0; Test-Path "variable:workflowCommands$($i)"; $i++){
@@ -150,12 +168,23 @@ SharedFields:
         
             foreach($workflowCommandItem in $workflowCommandItems){
                 if($selectedWorkflowCommands -contains $workflowCommandItem.ID.ToString()){
-        	        Create-NotificationAction -WorkflowCommandItemID $workflowCommandItem.ID -WebhookItem $webhookItem
+        	        Create-NotificationAction -WorkflowCommandItemID $workflowCommandItem.ID -WebhookItem $selectedWebhookItem
                 }
         	    else{
-        	        Delete-NotificationAction -WorkflowCommandItemID $workflowCommandItem.ID -WebhookItem $webhookItem
+        	        Delete-NotificationAction -WorkflowCommandItemID $workflowCommandItem.ID -WebhookItem $selectedWebhookItem
         	    }
             }
+            $notificationMessageSchema = Get-Item -Path master: -ID "{013735CF-326C-48CD-B3F6-C94A5AA5247C}";
+            $notificationMessageTitle = @("Teams Endpoint configured successfully!","")[$WebhookID -ne $null]
+            $notificationMessageText = @("This message confirms that this Teams Endpoint has been configured successfully in Sitecore and will start receiving notifications. Please make sure to select the right Workflow States and/or Publish Content Locations in the Sitecore Module Configuration page to receive appropriate notifications. Thank you for using this module!","Teams Endpoint configuration has been updated!")[$WebhookID -ne $null]
+            $notificationMessageLink = "$(Get-HostUrl)/sitecore/shell/Applications/PowerShell/PowerShell-Runner?scriptDb=master&scriptId=%7b0FAB3B7E-CF83-42BF-9214-56CEC520CBF5%7d&sc_bw=1"
+            $notificationMessage = $notificationMessageSchema.MessageSchema.Replace("{title}", $notificationMessageTitle).Replace("{text}", $notificationMessageText).Replace("{url}", $notificationMessageLink)
+            Send-TeamsNotification -Endpoint $endpoint -Message $notificationMessage
+            
+            Invoke-Javascript "window.top.location.reload()"
+        }
+        else{
+            Close-Window
         }
     }
 Languages:
@@ -176,11 +205,11 @@ Languages:
         sitecore\Admin
     - ID: "8cdc337e-a112-42fb-bbb4-4143751e123f"
       Hint: __Revision
-      Value: "734f5717-6c83-41cf-9914-831a5c6ee79b"
+      Value: "7dc8f34e-ea8d-4567-a178-ffcb548eee18"
     - ID: "badd9cf9-53e0-4d0c-bcc0-2d784c282f6a"
       Hint: __Updated by
       Value: |
         sitecore\Admin
     - ID: "d9cf14b1-fa16-4ba6-9288-e8a174d4d522"
       Hint: __Updated
-      Value: 20210530T040831Z
+      Value: 20210531T220749Z

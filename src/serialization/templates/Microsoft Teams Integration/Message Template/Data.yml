@@ -1,8 +1,8 @@
 ﻿---
-ID: "c9404005-8f46-4ed7-b7f2-b774f934b8e4"
-Parent: "1ffd13f5-73ff-4681-8c08-39caf503574f"
+ID: "edade32d-ff09-47b8-8d3d-3d4bc321f1e6"
+Parent: "a1e282fa-0463-4504-87a4-5cc8b1ce95c1"
 Template: "e269fbb5-3750-427a-9149-7aa950b49301"
-Path: /sitecore/templates/Modules/Microsoft Teams Integration/Webhook Settings/General
+Path: /sitecore/templates/Modules/Microsoft Teams Integration/Message Template/Data
 Languages:
 - Language: en
   Versions:
@@ -10,14 +10,14 @@ Languages:
     Fields:
     - ID: "25bed78c-4957-4165-998a-ca1b52f67497"
       Hint: __Created
-      Value: 20210109T154800Z
+      Value: 20210109T161109Z
     - ID: "8cdc337e-a112-42fb-bbb4-4143751e123f"
       Hint: __Revision
-      Value: "b9eca600-7b5e-4015-81f1-4d59636147dc"
+      Value: "25c82c3c-385f-4520-8687-e2ed42a24780"
     - ID: "badd9cf9-53e0-4d0c-bcc0-2d784c282f6a"
       Hint: __Updated by
       Value: |
         sitecore\Admin
     - ID: "d9cf14b1-fa16-4ba6-9288-e8a174d4d522"
       Hint: __Updated
-      Value: 20210526T184551Z
+      Value: 20210531T154544Z
