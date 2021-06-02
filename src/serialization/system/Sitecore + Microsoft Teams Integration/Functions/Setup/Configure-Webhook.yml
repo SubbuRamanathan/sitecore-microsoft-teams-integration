@@ -15,12 +15,13 @@ SharedFields:
     
         Import-Function Create-NotificationAction 
         Import-Function Delete-NotificationAction
-        Import-Function Send-TeamsNotification
+        Import-Function Send-UpdateNotification
         Import-Function Get-HostUrl
     
         $selectedWebhookItem = $null;
+        $isCreateRequest = $WebhookID -eq $null
         
-        if($WebhookID){
+        if(-Not $isCreateRequest){
             $selectedWebhookItem = Get-Item -Path master: -ID $WebhookID
             $name = $webhookName = $selectedWebhookItem.NickName
             $endpoint = $selectedWebhookItem.WebhookEndpoint
@@ -53,14 +54,14 @@ SharedFields:
     			$selectedOptions = @();
     			Get-ChildItem -Path "master:$($_.Paths.FullPath)" | Where-Object {$_.TemplateName -eq "Command"} | ForEach-Object { 
     				$options[$_.Name] = $_.ID.ToString();
-    				if($WebhookID){
+    				if(-Not $isCreateRequest){
     					if(Test-Path -Path "master:$($_.ItemPath)/Send-TeamsNotification-$($WebhookID.ToShortID())"){
     						$selectedOptions += $_.ID.ToString();
     					}
     				}
     			}
     			if($options.Count -gt 0){
-    				if($WebhookID){
+    				if(-Not $isCreateRequest){
     					Set-Variable "workflowCommands$($workflowStateIndex)" -Value $selectedOptions
     				}
     				$workflowTab += @{ Tab="WORKFLOW"; Name="workflowState$($workflowStateIndex)"; Value=$workflowStateName; Title="";Editor="info"; ParentGroupId=2; HideOnValue="0"; }
@@ -85,7 +86,7 @@ SharedFields:
     		@{ Tab="PUBLISH"; Name="publishDeleteOption"; Title=""; Options=[ordered]@{"Delete"=""}; Editor="link"; Columns=1; ParentGroupId=3; HideOnValue="0"; }
     	)
     	
-    	if($WebhookID){
+    	if(-Not $isCreateRequest){
             if($selectedWebhookItem.PublishNotificationSettings.Length -gt 0){
                 $publishNotificationEntries = $selectedWebhookItem.PublishNotificationSettings.Split('&');
                 for ($i=0; $i -lt $publishNotificationEntries.Length; $i++){
@@ -113,7 +114,7 @@ SharedFields:
     
         $allTabs = $generalTab + $workflowTab + $publishTab
         
-        $okButtonName = @("Create","Update")[$WebhookID -ne $null]
+        $okButtonName = @("Update", "Create")[$isCreateRequest]
         $dialogProps = @{
         	Title = "Configure Teams Endpoint"
         	Description = "Configure all the notification settings for a new or existing Teams Endpoint"
@@ -137,7 +138,7 @@ SharedFields:
         }
         
         if($result -eq "ok") {
-            if($WebhookID -eq $null){
+            if($isCreateRequest){
                 $webhooksItem = Get-Item -Path "master:" -ID "{AAEB319C-3BC9-411F-B0B9-721B5826AD0F}"
             	$webhookTemplate = Get-Item -Path "master:" -ID "{7AA3E7B4-B8D4-4972-9B94-A82604E977F7}"
             	$webhookItemName = [Sitecore.Data.Items.ItemUtil]::ProposeValidItemName($name) 
@@ -174,12 +175,7 @@ SharedFields:
         	        Delete-NotificationAction -WorkflowCommandItemID $workflowCommandItem.ID -WebhookItem $selectedWebhookItem
         	    }
             }
-            $notificationMessageSchema = Get-Item -Path master: -ID "{013735CF-326C-48CD-B3F6-C94A5AA5247C}";
-            $notificationMessageTitle = @("Teams Endpoint configured successfully!","")[$WebhookID -ne $null]
-            $notificationMessageText = @("This message confirms that this Teams Endpoint has been configured successfully in Sitecore and will start receiving notifications. Please make sure to select the right Workflow States and/or Publish Content Locations in the Sitecore Module Configuration page to receive appropriate notifications. Thank you for using this module!","Teams Endpoint configuration has been updated!")[$WebhookID -ne $null]
-            $notificationMessageLink = "$(Get-HostUrl)/sitecore/shell/Applications/PowerShell/PowerShell-Runner?scriptDb=master&scriptId=%7b0FAB3B7E-CF83-42BF-9214-56CEC520CBF5%7d&sc_bw=1"
-            $notificationMessage = $notificationMessageSchema.MessageSchema.Replace("{title}", $notificationMessageTitle).Replace("{text}", $notificationMessageText).Replace("{url}", $notificationMessageLink)
-            Send-TeamsNotification -Endpoint $endpoint -Message $notificationMessage
+            Send-UpdateNotification -Endpoint $endpoint -Message $notificationMessage -IsNewEndpoint $isCreateRequest
             
             Invoke-Javascript "window.top.location.reload()"
         }
@@ -205,11 +201,11 @@ Languages:
         sitecore\Admin
     - ID: "8cdc337e-a112-42fb-bbb4-4143751e123f"
       Hint: __Revision
-      Value: "7dc8f34e-ea8d-4567-a178-ffcb548eee18"
+      Value: "f608a147-9587-4bac-99a6-ad1525432c3e"
     - ID: "badd9cf9-53e0-4d0c-bcc0-2d784c282f6a"
       Hint: __Updated by
       Value: |
         sitecore\Admin
     - ID: "d9cf14b1-fa16-4ba6-9288-e8a174d4d522"
       Hint: __Updated
-      Value: 20210531T220749Z
+      Value: 20210601T190722Z

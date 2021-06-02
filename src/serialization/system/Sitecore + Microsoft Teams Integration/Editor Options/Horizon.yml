@@ -1,8 +1,8 @@
 ﻿---
-ID: "7d3c660d-8db6-43f6-8e55-0cd87deccd90"
-Parent: "93b3262d-148d-4174-b3bf-4ecd47cee484"
-Template: "dd22f1b3-bd87-4db2-9e7d-f7a496888d43"
-Path: "/sitecore/system/Modules/PowerShell/Script Library/Sitecore + Microsoft Teams Integration/Workflow/Process-StatusChangeNotification"
+ID: "186458a2-6e07-4976-9174-851748ce5798"
+Parent: "7736264f-3244-454e-82e6-61f8094f4f86"
+Template: "00d70f4c-5199-44e1-bc63-fffddefec992"
+Path: /sitecore/system/Modules/PowerShell/Script Library/Sitecore + Microsoft Teams Integration/Editor Options/Horizon
 Languages:
 - Language: en
   Versions:
@@ -10,7 +10,10 @@ Languages:
     Fields:
     - ID: "25bed78c-4957-4165-998a-ca1b52f67497"
       Hint: __Created
-      Value: 20210528T150209Z
+      Value: 20210601T180610Z
+    - ID: "36db011e-c1da-4192-9a23-78bad3ed05b2"
+      Hint: EditorName
+      Value: Horizon
     - ID: "52807595-0f8f-4b20-8d2a-cb71d28c6103"
       Hint: __Owner
       Value: |
@@ -21,11 +24,11 @@ Languages:
         sitecore\Admin
     - ID: "8cdc337e-a112-42fb-bbb4-4143751e123f"
       Hint: __Revision
-      Value: "d847a3e8-45f9-49ad-8727-0327cb2e0824"
+      Value: "fdd462ed-8153-48d4-b002-70ea45648115"
     - ID: "badd9cf9-53e0-4d0c-bcc0-2d784c282f6a"
       Hint: __Updated by
       Value: |
         sitecore\Admin
     - ID: "d9cf14b1-fa16-4ba6-9288-e8a174d4d522"
       Hint: __Updated
-      Value: 20210528T151229Z
+      Value: 20210601T180632Z

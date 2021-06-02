@@ -7,7 +7,6 @@ SharedFields:
 - ID: "b1a94ff0-6897-47c0-9c51-aa6acb80b1f0"
   Hint: Script
   Value: |
-    
     function Launch-ModuleOptions{
         Import-Function Inject-Scripts
         
@@ -17,32 +16,38 @@ SharedFields:
         $generalSettingsItem = Get-Item -Path master: -ID "{DD896673-142D-446D-8C02-E6C52A184706}"
         $executeScriptCommand = "item:executescript(script={0},scriptDb=master)"
         
-        $generalTab = @(
-        	@{ Tab="GENERAL"; Name="webhooksTitle"; Title="Teams Endpoints"; Editor="info"; ParentGroupId=1; HideOnValue="0"; }
+        $connectorTab = @(
+        	@{ Tab="CONNECTOR"; Name="webhooksTitle"; Title="Teams Endpoints"; Editor="info"; ParentGroupId=1; HideOnValue="0"; }
         )
         
         if($webhookItems.Count -eq 0){
-           $generalTab += @{ Tab="GENERAL"; Name="webhooksInfo"; Title=""; Value="No Teams Endpoint configured. Add a Teams Endpoint using the below link" ; Editor="info"; ParentGroupId=1; HideOnValue="0"; }
+           $connectorTab += @{ Tab="CONNECTOR"; Name="webhooksInfo"; Title=""; Value="No Teams Endpoint configured. Add a Teams Endpoint using the below link" ; Editor="info"; ParentGroupId=1; HideOnValue="0"; }
         }
         
         $webhookItems | ForEach-Object { 
             $editEndPointScript = Get-Item -Path "master:$($_.Paths.FullPath)/Scripts/Edit"
             $deleteEndPointScript = Get-Item -Path "master:$($_.Paths.FullPath)/Scripts/Delete"
             $options = [ordered]@{ "Edit" = $executeScriptCommand -f $editEndPointScript.ID.ToString() ; "Delete" = $executeScriptCommand -f $deleteEndPointScript.ID.ToString() }
-            $generalTab += @{ Tab="GENERAL"; Name=$_.Name; Value=$_["NickName"]; Title=""; Editor="info"; Columns=4; ParentGroupId=1; HideOnValue="0"; }
-            $generalTab += @{ Tab="GENERAL"; Name="$($_.Name)_Options"; Title=""; Options=$options; Editor="link"; Columns=6; ParentGroupId=1; HideOnValue="0"; }
+            $connectorTab += @{ Tab="CONNECTOR"; Name=$_.Name; Value=$_["NickName"]; Title=""; Editor="info"; Columns=4; ParentGroupId=1; HideOnValue="0"; }
+            $connectorTab += @{ Tab="CONNECTOR"; Name="$($_.Name)_Options"; Title=""; Options=$options; Editor="link"; Columns=6; ParentGroupId=1; HideOnValue="0"; }
         }
         
         $addOption = [ordered]@{ "Add New Teams Endpoint" = $executeScriptCommand -f "{5BD1ACCC-E98D-49C5-953A-741501F0A5DD}" }
-        $generalTab += @{ Tab="GENERAL"; Name="addEndpoint"; Title=""; Options=$addOption; Editor="link"; ParentGroupId=1; HideOnValue="0"; }
+        $connectorTab += @{ Tab="CONNECTOR"; Name="addEndpoint"; Title=""; Options=$addOption; Editor="link"; ParentGroupId=1; HideOnValue="0"; }
         
-        $generalTab += @{ Tab="GENERAL"; Name="pagespeedApiKey"; Title="Google PageSpeed API Key"; Value=$generalSettingsItem.PageSpeedAPIKey; Placeholder="Enter Google PageSpeed Insights API Key"; ParentGroupId=1; HideOnValue="0"; }
+        $preferredEditor = $generalSettingsItem.PreferredEditor.Split('|') | Foreach-Object { Get-Item -Path master: -ID $_ }
+        
+        $optionsTab = @(
+            @{ Tab="OPTIONS"; Name="pagespeedApiKey"; Title="Google PageSpeed API Key"; Value=$generalSettingsItem.PageSpeedAPIKey; Placeholder="Enter Google PageSpeed Insights API Key"; ParentGroupId=1; HideOnValue="0"; },
+            @{ Tab="OPTIONS"; Name="preferredEditor"; Title="Please select preferred editor(s)";  Editor="multilist"; Tooltip="";
+                Source="DataSource=/sitecore/system/Modules/PowerShell/Script Library/Sitecore + Microsoft Teams Integration/Editor Options&DatabaseName=master"; }
+        )
         
         $aboutTab = @(
         	@{ Tab="ABOUT"; Name="About"; Value="$webhookEndPointsDescription"; Editor="info" }
         )
         
-        $allTabs = $generalTab + $aboutTab
+        $allTabs = $connectorTab + $optionsTab + $aboutTab
         
         $dialogProps = @{
             Title="Sitecore + Microsoft Teams Integration"
@@ -52,7 +57,6 @@ SharedFields:
             OkButtonName="Save"
             CancelButtonName="Close"
             ShowHints=$true
-            Icon="office/16x16/graph_triangle.png"
             Parameters=$allTabs
         }
         
@@ -60,6 +64,7 @@ SharedFields:
         
         if($result -eq "ok") {
             Set-ItemProperty -Path "master:$($generalSettingsItem.ItemPath)" -Name "PageSpeedAPIKey" -Value $pagespeedApiKey
+            Set-ItemProperty -Path "master:$($generalSettingsItem.ItemPath)" -Name "PreferredEditor" -Value $preferredEditor
             Invoke-Javascript "window.top.location.reload()"
         }
         else{
@@ -84,11 +89,11 @@ Languages:
         sitecore\Admin
     - ID: "8cdc337e-a112-42fb-bbb4-4143751e123f"
       Hint: __Revision
-      Value: "96894a22-a973-4329-bfbf-672181e926c4"
+      Value: "917a3a9e-6e3c-4b61-9e34-3fe7ed7072b8"
     - ID: "badd9cf9-53e0-4d0c-bcc0-2d784c282f6a"
       Hint: __Updated by
       Value: |
         sitecore\Admin
     - ID: "d9cf14b1-fa16-4ba6-9288-e8a174d4d522"
       Hint: __Updated
-      Value: 20210531T153716Z
+      Value: 20210601T183827Z

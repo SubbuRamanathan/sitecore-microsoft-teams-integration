@@ -1,0 +1,108 @@
+﻿---
+ID: "7d3c660d-8db6-43f6-8e55-0cd87deccd90"
+Parent: "6bb3459a-491c-4a7a-b8d1-ed1e223624ec"
+Template: "dd22f1b3-bd87-4db2-9e7d-f7a496888d43"
+Path: "/sitecore/system/Modules/PowerShell/Script Library/Sitecore + Microsoft Teams Integration/Functions/Workflow/Process-StatusChangeNotification"
+SharedFields:
+- ID: "b1a94ff0-6897-47c0-9c51-aa6acb80b1f0"
+  Hint: Script
+  Value: |
+    function Process-StatusChangeNotification {
+        [CmdletBinding()]
+        param(
+            [Parameter(Mandatory = $true)]
+            [ID]$WebhookID
+        )
+    
+        Import-Function Get-StatusChangeNotificationInfo
+        Import-Function Get-RejectedNotificationInfo
+        Import-Function Get-ApprovedNotificationInfo
+        Import-Function Send-WorkflowNotification
+    
+        $workflowEvent = $SitecoreContextItem | Get-ItemWorkflowEvent | Select-Object -Last 1
+        if($workflowEvent.Date.AddMinutes(1) -lt (Get-Date).ToUniversalTime()){
+            return;
+        }
+        
+        $previousState = Get-Item -Path "master:" -ID $workflowEvent.OldState
+        $currentState = Get-Item -Path "master:" -ID $workflowEvent.NewState
+        
+        #$previousState = Get-Item -Path "master:" -ID "{46DA5376-10DC-4B66-B464-AFDAA29DE84F}"
+        #$currentState = Get-Item -Path "master:" -ID "{190B1C84-F1BE-47ED-AA41-F42193D9C8FC}"
+        
+        $notificationDetails = [pscustomobject]@{ summary = ''; title = ''; subtitle = ''; themeColor = ''; userProfilePicture = ''; language = ''; comments = ''; actions = ''; itemPath = '' }
+        
+        $user = Get-User -Id $workflowEvent.User
+        $publicDomain = "https://www.sitecore.com" #Needs to be a publicly accessible domain (sitecore.com will work if using default profile pictures)
+        $notificationDetails.userProfilePicture = $publicDomain + "/~/icon/" + $user.Profile.Portrait
+        $notificationDetails.itemPath = $SitecoreContextItem.Paths.FullPath
+        $notificationDetails.language = $SitecoreContextItem.Language.Name  
+        $notificationDetails.comments = $workflowEvent.CommentFields["Comments"]
+        
+        if($currentState.Final){
+            $notificationDetails.title = "$($user.Profile.FullName)($($user.Name)) has approved '$($SitecoreContextItem.DisplayName)'"
+            $notificationDetails.subtitle = "Updates are live now, please validate and modify if needed"
+            $notificationDetails.themeColor = "19a5a2"
+            #$notificationDetails = Get-ApprovedNotificationInfo
+        }
+        else{
+             $wasAwaitingApproval = isAwaitingApproval($previousState)
+             if($wasAwaitingApproval){
+                $notificationDetails.title = "$($user.Profile.FullName)($($user.Name)) has rejected '$($SitecoreContextItem.DisplayName)'"
+                $notificationDetails.subtitle = "Please review and update as needed"
+                $notificationDetails.themeColor = "dc3545"
+                #$notificationDetails = Get-RejectedNotificationInfo
+             }
+             else{
+                $notificationDetails.title = "$($user.Profile.FullName)($($user.Name)) has transitioned '$($SitecoreContextItem.DisplayName)' from '$($previousState.Name)' state to '$($currentState.Name)' state"
+                $notificationDetails.subtitle = ""
+                $notificationDetails.themeColor = "ffc107"
+                if(isAwaitingApproval($currentState)){
+                    $notificationDetails.subtitle = "Please review and approve the changes"
+                }
+                #$notificationDetails = Get-StatusChangeNotificationInfo
+             }
+        }
+        $notificationDetails.summary = $notificationDetails.title = $notificationDetails.title.Replace('\', '\\')
+        
+        Send-WorkflowNotification -WebhookID $WebhookID -NotificationDetails $notificationDetails
+    }
+    
+    function isAwaitingApproval($state){
+        if($state.Final){
+            return $false;
+        }
+        
+        $isAwaitingApproval = $false;
+        $state.Children | Get-ItemField -ReturnType Field -Name "Next state" | Foreach-Object { 
+            $isAwaitingApproval = $isAwaitingApproval -or (Get-Item master: -ID $_.Value | Get-ItemField -ReturnType Field -Name "Final" | Select-Object -Expand Value)
+        }
+        return $isAwaitingApproval
+    }
+    #Process-StatusChangeNotification "{86132DD9-9206-4B25-BD01-F61A8DC95E6F}"
+Languages:
+- Language: en
+  Versions:
+  - Version: 1
+    Fields:
+    - ID: "25bed78c-4957-4165-998a-ca1b52f67497"
+      Hint: __Created
+      Value: 20210528T150209Z
+    - ID: "52807595-0f8f-4b20-8d2a-cb71d28c6103"
+      Hint: __Owner
+      Value: |
+        sitecore\Admin
+    - ID: "5dd74568-4d4b-44c1-b513-0af5f4cda34f"
+      Hint: __Created by
+      Value: |
+        sitecore\Admin
+    - ID: "8cdc337e-a112-42fb-bbb4-4143751e123f"
+      Hint: __Revision
+      Value: "b169adcd-8733-4a21-972e-ca317e1cd879"
+    - ID: "badd9cf9-53e0-4d0c-bcc0-2d784c282f6a"
+      Hint: __Updated by
+      Value: |
+        sitecore\Admin
+    - ID: "d9cf14b1-fa16-4ba6-9288-e8a174d4d522"
+      Hint: __Updated
+      Value: 20210602T004636Z

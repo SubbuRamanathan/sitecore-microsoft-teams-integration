@@ -1,20 +1,41 @@
-var iframes = document.getElementsByTagName("iframe");
-for(var i = iframes.length; i--;){
-	iframes[i].contentDocument.addEventListener("DOMNodeInserted", function(e) {
-		if (e.target.tagName && e.target.tagName.toLowerCase() === 'iframe') {
-			e.target.addEventListener("load", function(i) {
-				if(i.target.contentDocument && !isScriptLoaded(i.target.contentDocument)){
-				   addScript(i.target.contentDocument);
-				   addStyleSheet(i.target.contentDocument);
-				}
-				handleTestMessagePrompt(e.target);
-				handleSaveConfirmationPrompt(e.target);
-			});
-		}
-	});
+var scriptUrl = '/sitecore%20modules/MicrosoftTeamsIntegration/main.js'; 
+function main(){
+	updateBackground();
+	handlePowershellWindowInserted();
+	initializeTabs();
+	initializeLinks();
 }
 
-var scriptUrl = '/sitecore%20modules/MicrosoftTeamsIntegration/main.js'; 
+function updateBackground(){
+	var backgroundContainer = window.top.document.getElementsByClassName('scFlexColumnContainer')[0];
+	backgroundContainer.style.background = '#f8f8f8 url(/sitecore%20modules/MicrosoftTeamsIntegration/module-background.png) top left no-repeat';
+	for(var i=0; i < backgroundContainer.children.length; i++){
+		backgroundContainer.children[i].style.display = 'none';
+	}
+}
+
+function handlePowershellWindowInserted(){
+	var iframes = document.getElementsByTagName("iframe");
+	for(var i = iframes.length; i--;){
+		iframes[i].contentDocument.addEventListener("DOMNodeInserted", function(e) {
+			if (e.target.tagName && e.target.tagName.toLowerCase() === 'iframe') {
+				e.target.addEventListener("load", function(i) {
+					powershellWindowOnLoad(i);
+				});
+			}
+		});
+	}
+}
+
+function powershellWindowOnLoad(iFrame){
+	if(iFrame.target.contentDocument && !isScriptLoaded(iFrame.target.contentDocument)){
+	   addScript(iFrame.target.contentDocument);
+	   addStyleSheet(iFrame.target.contentDocument);
+	}
+	handleTestMessagePrompt(iFrame.target);
+	handleSaveConfirmationPrompt(iFrame.target);
+}
+
 function isScriptLoaded(iFrameDocument) {
     var scripts = iFrameDocument.getElementsByTagName('script');
     for (var i = scripts.length; i--;) {
@@ -36,11 +57,6 @@ function addStyleSheet(iFrameDocument){
 	linkElement.rel = "stylesheet";
 	linkElement.href = "/sitecore modules/MicrosoftTeamsIntegration/main.css";
 	iFrameDocument.head.appendChild(linkElement);
-}
-
-function main(){
-	initializeTabs();
-	initializeLinks();
 }
 
 function initializeTabs(){
@@ -103,7 +119,7 @@ function getInnerText(element){
 }
 
 function appendAllOptionToDropdowns(){
-	document.querySelectorAll("select").forEach(function(select){
+	document.querySelectorAll("select.scCombobox").forEach(function(select){
 		select.firstChild.text = 'All';
 		select.firstChild.value = '';
 	});

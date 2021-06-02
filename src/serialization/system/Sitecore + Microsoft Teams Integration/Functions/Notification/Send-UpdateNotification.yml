@@ -1,0 +1,55 @@
+﻿---
+ID: "cfcbce83-f4eb-4a6e-8c6a-16acf9478625"
+Parent: "1a3e4203-c1ce-414c-bdcd-51e9bcc0627b"
+Template: "dd22f1b3-bd87-4db2-9e7d-f7a496888d43"
+Path: "/sitecore/system/Modules/PowerShell/Script Library/Sitecore + Microsoft Teams Integration/Functions/Notification/Send-UpdateNotification"
+SharedFields:
+- ID: "b1a94ff0-6897-47c0-9c51-aa6acb80b1f0"
+  Hint: Script
+  Value: |
+    function Send-UpdateNotification{
+        [CmdletBinding()]
+        param(
+            [string]$Endpoint,
+            [string]$Message,
+            [bool]$IsNewEndpoint
+        )
+        
+        Import-Function Send-TeamsNotification
+        
+        $notificationMessageSchema = Get-Item -Path master: -ID "{013735CF-326C-48CD-B3F6-C94A5AA5247C}";
+        $notificationMessageTitle = @("","Teams Endpoint configured successfully!")[$IsNewEndpoint]
+        $notificationMessageText = @("This message confirms that this Teams Endpoint has been configured successfully in Sitecore and will start receiving notifications. Please make sure to select the right Workflow States and/or Publish Content Locations in the Sitecore Module Configuration page to receive appropriate notifications. Thank you for using this module!","Teams Endpoint configuration has been updated!")[$WebhookID -ne $null]
+        $notificationMessageLink = "$(Get-HostUrl)/sitecore/shell/Applications/PowerShell/PowerShell-Runner?scriptDb=master&scriptId=%7b0FAB3B7E-CF83-42BF-9214-56CEC520CBF5%7d&sc_bw=1"
+        $notificationMessage = $notificationMessageSchema.MessageSchema.Replace("{title}", $notificationMessageTitle).Replace("{text}", $notificationMessageText).Replace("{url}", $notificationMessageLink)
+        Send-TeamsNotification -Endpoint $endpoint -Message $notificationMessage
+    }
+- ID: "ba3f86a2-4a1c-4d78-b63d-91c2779c1b5e"
+  Hint: __Sortorder
+  Value: 800
+Languages:
+- Language: en
+  Versions:
+  - Version: 1
+    Fields:
+    - ID: "25bed78c-4957-4165-998a-ca1b52f67497"
+      Hint: __Created
+      Value: 20210528T150130Z
+    - ID: "52807595-0f8f-4b20-8d2a-cb71d28c6103"
+      Hint: __Owner
+      Value: |
+        sitecore\Admin
+    - ID: "5dd74568-4d4b-44c1-b513-0af5f4cda34f"
+      Hint: __Created by
+      Value: |
+        sitecore\Admin
+    - ID: "8cdc337e-a112-42fb-bbb4-4143751e123f"
+      Hint: __Revision
+      Value: "7c91db05-9ddc-4e91-850e-afeb404200a7"
+    - ID: "badd9cf9-53e0-4d0c-bcc0-2d784c282f6a"
+      Hint: __Updated by
+      Value: |
+        sitecore\Admin
+    - ID: "d9cf14b1-fa16-4ba6-9288-e8a174d4d522"
+      Hint: __Updated
+      Value: 20210601T205051Z
