@@ -13,7 +13,7 @@ Languages:
       Value: 20210601T180610Z
     - ID: "36db011e-c1da-4192-9a23-78bad3ed05b2"
       Hint: EditorName
-      Value: Horizon
+      Value: Edit in Horizon
     - ID: "52807595-0f8f-4b20-8d2a-cb71d28c6103"
       Hint: __Owner
       Value: |
@@ -22,13 +22,16 @@ Languages:
       Hint: __Created by
       Value: |
         sitecore\Admin
+    - ID: "87b38d54-2c56-4efd-89bd-9a94c76f54d0"
+      Hint: EditorUrlFormat
+      Value: "{horizon-url}/editor?sc_itemid={id}&sc_lang={lang}&sc_site={site}"
     - ID: "8cdc337e-a112-42fb-bbb4-4143751e123f"
       Hint: __Revision
-      Value: "fdd462ed-8153-48d4-b002-70ea45648115"
+      Value: "578ecc90-93d6-4707-8843-348f45a210ab"
     - ID: "badd9cf9-53e0-4d0c-bcc0-2d784c282f6a"
       Hint: __Updated by
       Value: |
         sitecore\Admin
     - ID: "d9cf14b1-fa16-4ba6-9288-e8a174d4d522"
       Hint: __Updated
-      Value: 20210601T180632Z
+      Value: 20210602T195620Z

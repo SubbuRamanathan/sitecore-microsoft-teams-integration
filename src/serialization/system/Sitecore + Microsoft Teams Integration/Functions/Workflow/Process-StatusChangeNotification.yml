@@ -13,59 +13,65 @@ SharedFields:
             [Parameter(Mandatory = $true)]
             [ID]$WebhookID
         )
-    
-        Import-Function Get-StatusChangeNotificationInfo
-        Import-Function Get-RejectedNotificationInfo
-        Import-Function Get-ApprovedNotificationInfo
-        Import-Function Send-WorkflowNotification
-    
-        $workflowEvent = $SitecoreContextItem | Get-ItemWorkflowEvent | Select-Object -Last 1
-        if($workflowEvent.Date.AddMinutes(1) -lt (Get-Date).ToUniversalTime()){
-            return;
+        
+        New-UsingBlock (New-Object -TypeName "Sitecore.SecurityModel.SecurityDisabler") {
+            Import-Function Get-MessageActions
+            Import-Function Get-StatusChangeNotificationInfo
+            Import-Function Get-RejectedNotificationInfo
+            Import-Function Get-ApprovedNotificationInfo
+            Import-Function Send-WorkflowNotification
+        
+            $workflowEvent = $SitecoreContextItem | Get-ItemWorkflowEvent | Select-Object -Last 1
+            if($workflowEvent.Date.AddMinutes(1) -lt (Get-Date).ToUniversalTime()){
+                return;
+            }
+            
+            $previousState = Get-Item -Path "master:" -ID $workflowEvent.OldState
+            $currentState = Get-Item -Path "master:" -ID $workflowEvent.NewState
+            
+            #$previousState = Get-Item -Path "master:" -ID "{46DA5376-10DC-4B66-B464-AFDAA29DE84F}"
+            #$currentState = Get-Item -Path "master:" -ID "{190B1C84-F1BE-47ED-AA41-F42193D9C8FC}"
+            
+            $notificationDetails = [pscustomobject]@{ summary = ''; title = ''; subtitle = ''; themeColor = ''; userProfilePicture = ''; language = ''; comments = ''; actions = ''; itemPath = '' }
+            
+            $user = Get-User -Id $workflowEvent.User
+            $publicDomain = "https://www.sitecore.com" #Needs to be a publicly accessible domain (sitecore.com will work if using default profile pictures)
+            $notificationDetails.userProfilePicture = $publicDomain + "/~/icon/" + $user.Profile.Portrait
+            $notificationDetails.itemPath = $SitecoreContextItem.Paths.FullPath
+            $notificationDetails.language = $SitecoreContextItem.Language.Name  
+            $notificationDetails.comments = $workflowEvent.CommentFields["Comments"]
+            
+            if($currentState.Final){
+                $notificationDetails.title = "$($user.Profile.FullName)($($user.Name)) has approved '$($SitecoreContextItem.DisplayName)'"
+                $notificationDetails.subtitle = "Updates are live now, please validate and modify if needed"
+                $notificationDetails.themeColor = "19a5a2"
+                $notificationDetails.actions = Get-MessageActions -IsApproved $true
+                #$notificationDetails = Get-ApprovedNotificationInfo
+            }
+            else{
+                 $wasAwaitingApproval = isAwaitingApproval($previousState)
+                 if($wasAwaitingApproval){
+                    $notificationDetails.title = "$($user.Profile.FullName)($($user.Name)) has rejected '$($SitecoreContextItem.DisplayName)'"
+                    $notificationDetails.subtitle = "Please review and update as needed"
+                    $notificationDetails.themeColor = "dc3545"
+                    $notificationDetails.actions = Get-MessageActions
+                    #$notificationDetails = Get-RejectedNotificationInfo
+                 }
+                 else{
+                    $notificationDetails.title = "$($user.Profile.FullName)($($user.Name)) has transitioned '$($SitecoreContextItem.DisplayName)' from '$($previousState.Name)' state to '$($currentState.Name)' state"
+                    $notificationDetails.subtitle = ""
+                    $notificationDetails.themeColor = "ffc107"
+                    if(isAwaitingApproval($currentState)){
+                        $notificationDetails.subtitle = "Please review and approve the changes"
+                    }
+                    $notificationDetails.actions = Get-MessageActions -WorkflowState $currentState
+                    #$notificationDetails = Get-StatusChangeNotificationInfo
+                 }
+            }
+            $notificationDetails.summary = $notificationDetails.title = $notificationDetails.title.Replace('\', '\\')
+            
+            Send-WorkflowNotification -WebhookID $WebhookID -NotificationDetails $notificationDetails
         }
-        
-        $previousState = Get-Item -Path "master:" -ID $workflowEvent.OldState
-        $currentState = Get-Item -Path "master:" -ID $workflowEvent.NewState
-        
-        #$previousState = Get-Item -Path "master:" -ID "{46DA5376-10DC-4B66-B464-AFDAA29DE84F}"
-        #$currentState = Get-Item -Path "master:" -ID "{190B1C84-F1BE-47ED-AA41-F42193D9C8FC}"
-        
-        $notificationDetails = [pscustomobject]@{ summary = ''; title = ''; subtitle = ''; themeColor = ''; userProfilePicture = ''; language = ''; comments = ''; actions = ''; itemPath = '' }
-        
-        $user = Get-User -Id $workflowEvent.User
-        $publicDomain = "https://www.sitecore.com" #Needs to be a publicly accessible domain (sitecore.com will work if using default profile pictures)
-        $notificationDetails.userProfilePicture = $publicDomain + "/~/icon/" + $user.Profile.Portrait
-        $notificationDetails.itemPath = $SitecoreContextItem.Paths.FullPath
-        $notificationDetails.language = $SitecoreContextItem.Language.Name  
-        $notificationDetails.comments = $workflowEvent.CommentFields["Comments"]
-        
-        if($currentState.Final){
-            $notificationDetails.title = "$($user.Profile.FullName)($($user.Name)) has approved '$($SitecoreContextItem.DisplayName)'"
-            $notificationDetails.subtitle = "Updates are live now, please validate and modify if needed"
-            $notificationDetails.themeColor = "19a5a2"
-            #$notificationDetails = Get-ApprovedNotificationInfo
-        }
-        else{
-             $wasAwaitingApproval = isAwaitingApproval($previousState)
-             if($wasAwaitingApproval){
-                $notificationDetails.title = "$($user.Profile.FullName)($($user.Name)) has rejected '$($SitecoreContextItem.DisplayName)'"
-                $notificationDetails.subtitle = "Please review and update as needed"
-                $notificationDetails.themeColor = "dc3545"
-                #$notificationDetails = Get-RejectedNotificationInfo
-             }
-             else{
-                $notificationDetails.title = "$($user.Profile.FullName)($($user.Name)) has transitioned '$($SitecoreContextItem.DisplayName)' from '$($previousState.Name)' state to '$($currentState.Name)' state"
-                $notificationDetails.subtitle = ""
-                $notificationDetails.themeColor = "ffc107"
-                if(isAwaitingApproval($currentState)){
-                    $notificationDetails.subtitle = "Please review and approve the changes"
-                }
-                #$notificationDetails = Get-StatusChangeNotificationInfo
-             }
-        }
-        $notificationDetails.summary = $notificationDetails.title = $notificationDetails.title.Replace('\', '\\')
-        
-        Send-WorkflowNotification -WebhookID $WebhookID -NotificationDetails $notificationDetails
     }
     
     function isAwaitingApproval($state){
@@ -98,11 +104,11 @@ Languages:
         sitecore\Admin
     - ID: "8cdc337e-a112-42fb-bbb4-4143751e123f"
       Hint: __Revision
-      Value: "b169adcd-8733-4a21-972e-ca317e1cd879"
+      Value: "1849e462-4faf-4cab-ae5c-e9505647e10c"
     - ID: "badd9cf9-53e0-4d0c-bcc0-2d784c282f6a"
       Hint: __Updated by
       Value: |
         sitecore\Admin
     - ID: "d9cf14b1-fa16-4ba6-9288-e8a174d4d522"
       Hint: __Updated
-      Value: 20210602T004636Z
+      Value: 20210602T201249Z

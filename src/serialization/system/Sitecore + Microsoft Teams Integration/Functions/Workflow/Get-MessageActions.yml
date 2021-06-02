@@ -10,31 +10,70 @@ SharedFields:
     function Get-MessageActions {
         [CmdletBinding()]
         param(
-            [Parameter(Mandatory = $true)]
-            [ID]$WebhookID
+            [item]$WorkflowState,
+            [bool]$IsApproved
         )
+        
+        Import-Function Get-ContextItemSite
+        Import-Function Get-ItemUrl
+        Import-Function Get-HostUrl
     
-        Import-Function Send-TeamsNotification
-        $hostUrl = Get-HostUrl
-        $id = $SitecoreContextItem.ID.ToString().ToUpper()
-        $encodedId = [System.Web.HttpUtility]::UrlEncode($id)
+        $actionSchemaItem = Get-Item -Path master: -ID "{1DBDD802-8983-4579-B2A4-BAEC8FA0B518}"
+        $generalSettingsItem = Get-Item -Path master: -ID "{DD896673-142D-446D-8C02-E6C52A184706}"
+        
+        $encodedId = [System.Web.HttpUtility]::UrlEncode($SitecoreContextItem.ID.ToString().ToUpper())
         $language = $SitecoreContextItem.Language.Name
-        $editUrl = "$hostUrl/sitecore/shell/sitecore/content/Applications/Content Editor.aspx?id=$($encodedId)&amp;la=$($language)&amp;fo=$($encodedId)"
+        $version = $SitecoreContextItem.Version
+        $site = (Get-ContextItemSite $SitecoreContextItem).Name
     
+        $hostUrl = Get-HostUrl
+        $horizonUrl = [Sitecore.Configuration.Settings]::GetSetting("Horizon.ClientHost");
+        [System.Uri]$publishedUrl = Get-ItemUrl -Item $SitecoreContextItem
+        $path = $publishedUrl.AbsolutePath
+        
         $actions = @()
-        if(Get-Layout $SitecoreContextItem)
-        {
-            $previewUrl = "$hostUrl/?sc_itemid=$($encodedId)&amp;sc_mode=preview&amp;sc_lang=$($language)"
-            $siteContext = [Sitecore.Sites.SiteContext]::GetSite("website")
-            $publishedUrl = Get-ItemUrl -SiteContext $siteContext -Item $SitecoreContextItem
-            if($isApproved){
-                $actions += Get-TeamsAction -actionName "View" -actionUrl $publishedUrl
-            }
-            else{
-                $actions += Get-TeamsAction -actionName "Preview" -actionUrl $previewUrl
+        if($WorkflowState){
+            $commandUrl = "$hostUrl/sitecore/shell/feeds/action.aspx?c=Workflow&id=$encodedId&la=$language&v=$version&nc=1&cmd="
+            
+            $database = Get-Database -Name "master"
+            $workflowItemId = $WorkflowState.Parent.ID.ToString()
+            $commands = $database.WorkflowProvider.GetWorkflow($workflowItemId).GetCommands($WorkflowState.ID.ToString())
+            foreach($command in $commands){
+                $actionUrl = $commandUrl + [System.Web.HttpUtility]::UrlEncode($command.CommandID)
+                $actions += getActionMessage $actionSchemaItem.MessageSchema $command.DisplayName $actionUrl
             }
         }
-        $actions += Get-TeamsAction -actionName "Edit" -actionUrl $editUrl
+        
+        if(Get-Layout $SitecoreContextItem)
+        {
+            $previewUrl = "$hostUrl$($path)?sc_mode=preview&sc_site=$site"
+            if($IsApproved){
+                $actions += getActionMessage $actionSchemaItem.MessageSchema 'View' $publishedUrl
+            }
+            else{
+                $actions += getActionMessage $actionSchemaItem.MessageSchema 'Preview' $previewUrl
+            }
+        }
+        
+        $generalSettingsItem.PreferredEditor.Split('|') | Foreach-Object {
+            $editorItem = Get-Item -Path master: -ID $_
+            if($editorItem.EditorUrlFormat -inotmatch '{horizon-url}' -or $horizonUrl){
+                $actionUrl = $editorItem.EditorUrlFormat  -replace '{cm-url}', $hostUrl `
+                        -replace '{horizon-url}', $horizonUrl `
+                        -replace '{id}', $encodedId `
+                        -replace '{lang}', $language `
+                        -replace '{path}', $path `
+                        -replace '{site}', $site
+                $actions += getActionMessage $actionSchemaItem.MessageSchema $editorItem.EditorName $actionUrl
+            }
+        }
+        
+        return $actions -join ","
+    }
+    
+    function getActionMessage($messageSchema, $actionName, $actionUrl) {
+        return $messageSchema -replace '{name}', $actionName `
+                        -replace '{url}', $actionUrl `
     }
 - ID: "ba3f86a2-4a1c-4d78-b63d-91c2779c1b5e"
   Hint: __Sortorder
@@ -57,11 +96,11 @@ Languages:
         sitecore\Admin
     - ID: "8cdc337e-a112-42fb-bbb4-4143751e123f"
       Hint: __Revision
-      Value: "4a561906-ec50-4a3c-8a2c-f32f5af76324"
+      Value: "4978eef9-7f5a-4368-bba6-ae30710ec348"
     - ID: "badd9cf9-53e0-4d0c-bcc0-2d784c282f6a"
       Hint: __Updated by
       Value: |
         sitecore\Admin
     - ID: "d9cf14b1-fa16-4ba6-9288-e8a174d4d522"
       Hint: __Updated
-      Value: 20210601T212315Z
+      Value: 20210602T210019Z

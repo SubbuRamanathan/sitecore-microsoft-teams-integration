@@ -21,7 +21,7 @@ Languages:
         sitecore\Admin
     - ID: "8cdc337e-a112-42fb-bbb4-4143751e123f"
       Hint: __Revision
-      Value: "fe3ecc5c-ef69-46ac-bc4a-6bd1749ee85a"
+      Value: "e7bc5c5d-01d8-4b3f-867e-0316a8826d69"
     - ID: "939782ea-0ac1-47f3-968d-e92109dd97bf"
       Hint: MessageSchema
       Value: |
@@ -51,7 +51,8 @@ Languages:
         			}
                 ],
                 "markdown": true
-            }]
+            }],
+        	"potentialAction": [{actions}]
         }
     - ID: "badd9cf9-53e0-4d0c-bcc0-2d784c282f6a"
       Hint: __Updated by
@@ -59,4 +60,4 @@ Languages:
         sitecore\Admin
     - ID: "d9cf14b1-fa16-4ba6-9288-e8a174d4d522"
       Hint: __Updated
-      Value: 20210601T235844Z
+      Value: 20210602T195448Z

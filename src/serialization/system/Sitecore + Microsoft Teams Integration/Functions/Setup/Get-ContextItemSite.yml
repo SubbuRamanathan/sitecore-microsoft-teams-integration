@@ -1,35 +1,20 @@
 ﻿---
-ID: "dc4e4a4b-80b2-4b47-a5cc-38050840f985"
+ID: "969ae67b-b08d-4820-a184-b769f9f9c8cd"
 Parent: "2da9e563-d99f-49ca-8e7b-b067c73c1d3f"
 Template: "dd22f1b3-bd87-4db2-9e7d-f7a496888d43"
-Path: "/sitecore/system/Modules/PowerShell/Script Library/Sitecore + Microsoft Teams Integration/Functions/Setup/Get-ItemUrl"
+Path: "/sitecore/system/Modules/PowerShell/Script Library/Sitecore + Microsoft Teams Integration/Functions/Setup/Get-ContextItemSite"
 SharedFields:
 - ID: "b1a94ff0-6897-47c0-9c51-aa6acb80b1f0"
   Hint: Script
   Value: |
-    function Get-ItemUrl {
+    function Get-ContextItemSite {
         [CmdletBinding()]
         param(
-            [item]$Item,
-            [Sitecore.Sites.SiteContext]$SiteContext
+            [item]$Item
         )
-        
-        if($SiteContext -eq $null){
-            $SiteContext = Get-ContextItemSite $Item
-        }
-    
-        $result = New-UsingBlock(New-Object Sitecore.Sites.SiteContextSwitcher $SiteContext) {    
-            $urlOptions = [Sitecore.Links.LinkManager]::GetDefaultUrlOptions()
-            $urlOptions.AlwaysIncludeServerUrl = $true
-            $urlOptions.SiteResolving = $true
-            $urlOptions.Language = $SitecoreContextItem.Language
-            $urlOptions.LanguageEmbedding = [Sitecore.Links.LinkManager]::LanguageEmbedding
-            [Sitecore.Links.LinkManager]::GetItemUrl($SitecoreContextItem, $urlOptions)
-        }
-        return $result[0]
+         
+        return [Sitecore.Sites.SiteContextFactory]::Sites | Where-Object {$_.HostName -ne "" -and $Item.Paths.FullPath.StartsWith($_.RootPath + $_.StartItem, "CurrentCultureIgnoreCase")}
     }
-    
-    
 - ID: "ba3f86a2-4a1c-4d78-b63d-91c2779c1b5e"
   Hint: __Sortorder
   Value: 500
@@ -51,14 +36,14 @@ Languages:
         sitecore\Admin
     - ID: "8cdc337e-a112-42fb-bbb4-4143751e123f"
       Hint: __Revision
-      Value: "1e842f82-cd90-4530-967a-2ce97781ace8"
+      Value: "97bbe61b-17cb-4d27-bdf8-82d108083a17"
     - ID: "badd9cf9-53e0-4d0c-bcc0-2d784c282f6a"
       Hint: __Updated by
       Value: |
         sitecore\Admin
     - ID: "d9cf14b1-fa16-4ba6-9288-e8a174d4d522"
       Hint: __Updated
-      Value: 20210602T183435Z
+      Value: 20210602T171231Z
 - Language: "fr-CA"
   Versions:
   - Version: 1
