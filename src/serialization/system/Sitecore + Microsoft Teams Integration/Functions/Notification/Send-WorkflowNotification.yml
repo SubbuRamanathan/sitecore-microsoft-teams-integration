@@ -30,16 +30,7 @@ SharedFields:
                     -replace '{comments}', $NotificationDetails.comments `
                     -replace '{actions}', $NotificationDetails.actions
     
-        try{
-            Send-TeamsNotification -Endpoint $endpoint -Message $message
-        }
-        catch{
-            Write-Log "StatusCode:" $_.Exception.Response.StatusCode.value__ -Verbose
-            Write-Log "StatusDescription:" $_.Exception.Response.StatusDescription -Verbose
-            Write-Log "Posted Response:"
-            Write-Log ($message | Out-String) -Verbose
-            Show-Alert -Title "Notification failed to post to 'Workflow Moderators' Teams Channel"
-        }
+        Send-TeamsNotification -Endpoint $endpoint -Message $message
     }
 - ID: "ba3f86a2-4a1c-4d78-b63d-91c2779c1b5e"
   Hint: __Sortorder
@@ -62,11 +53,11 @@ Languages:
         sitecore\Admin
     - ID: "8cdc337e-a112-42fb-bbb4-4143751e123f"
       Hint: __Revision
-      Value: "75446456-c692-495b-a716-5e5e31fee3ab"
+      Value: "1c1fb402-0f65-4495-bdd3-e2499b935690"
     - ID: "badd9cf9-53e0-4d0c-bcc0-2d784c282f6a"
       Hint: __Updated by
       Value: |
         sitecore\Admin
     - ID: "d9cf14b1-fa16-4ba6-9288-e8a174d4d522"
       Hint: __Updated
-      Value: 20210602T004236Z
+      Value: 20210609T145513Z

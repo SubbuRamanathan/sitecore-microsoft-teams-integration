@@ -14,7 +14,18 @@ SharedFields:
             [string]$Message
         )
         
-        return Invoke-RestMethod -Method post -ContentType 'Application/Json' -Body $Message -Uri $Endpoint;
+        try{
+            $result = Invoke-RestMethod -Method post -ContentType 'Application/Json' -Body $Message -Uri $Endpoint;
+        }
+        catch{
+            Write-Log "StatusCode:" $_.Exception.Response.StatusCode.value__ -Verbose
+            Write-Log "StatusDescription:" $_.Exception.Response.StatusDescription -Verbose
+            Write-Log "Posted Response:"
+            Write-Log ($Message | Out-String) -Verbose
+            Show-Alert -Title "Notification failed to post to Teams Endpoint: $Endpoint"
+            return
+        }
+        return $result
     }
 - ID: "ba3f86a2-4a1c-4d78-b63d-91c2779c1b5e"
   Hint: __Sortorder
@@ -37,11 +48,11 @@ Languages:
         sitecore\Admin
     - ID: "8cdc337e-a112-42fb-bbb4-4143751e123f"
       Hint: __Revision
-      Value: "ef6699fe-ec1e-445a-990d-24a553d770a2"
+      Value: "f13676b0-7cc7-4945-aa4c-38d983d803dc"
     - ID: "badd9cf9-53e0-4d0c-bcc0-2d784c282f6a"
       Hint: __Updated by
       Value: |
         sitecore\Admin
     - ID: "d9cf14b1-fa16-4ba6-9288-e8a174d4d522"
       Hint: __Updated
-      Value: 20210531T212048Z
+      Value: 20210609T145949Z

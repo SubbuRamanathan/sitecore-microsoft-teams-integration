@@ -1,0 +1,123 @@
+﻿---
+ID: "b63e779e-18ec-4de5-9f9e-db896d8adc0d"
+Parent: "4e6e9680-b6f0-48b9-8c72-915ef1f30b25"
+Template: "dd22f1b3-bd87-4db2-9e7d-f7a496888d43"
+Path: "/sitecore/system/Modules/PowerShell/Script Library/Sitecore + Microsoft Teams Integration/Publish/Process-PublishNotification"
+SharedFields:
+- ID: "b1a94ff0-6897-47c0-9c51-aa6acb80b1f0"
+  Hint: Script
+  Value: |
+    #Sample Publish Context
+    $user = [pscustomobject]@{ DisplayName = 'sitecore\admin' }
+    $processedCandidates = @{}
+    #$processedCandidates.Add([pscustomobject]@{ ItemId = '{110D559F-DEA5-42EA-9C1C-8A5DF7E70EF9}'}, 0)
+    #$processedCandidates.Add([pscustomobject]@{ ItemId = '{AF584191-45C9-4201-8740-5409F4CF8BDD}'}, 0)
+    #$processedCandidates.Add([pscustomobject]@{ ItemId = '{A9E97634-104F-454E-B2B7-55A12640DFFC}'}, 0)
+    #$processedCandidates.Add([pscustomobject]@{ ItemId = '{D588BF32-F16E-4F41-BE1C-7459A1F389D3}'}, 0)
+    $options = [pscustomobject]@{ Mode = 'SingleItem'; Deep = $true; PublishingTargets = @('{8E080626-DDC3-4EF4-A1D1-F0BE4A200254}'); TargetDatabase = [pscustomobject]@{ Name = 'web'}; RootItem = [pscustomobject]@{ DisplayName = "Blogs"; Paths = [pscustomobject]@{ FullPath = '/sitecore/content/Home/Blogs'}}; PublishRelatedItems = $false; }
+    $publishContext = [pscustomobject]@{ User = $user; Languages = @('en'); PublishOptions = $options; ProcessedPublishingCandidates = $processedCandidates; DeleteCandidates = '' }
+            
+    #$publishContext = Get-Variable -Name publishContext -ValueOnly
+    
+    Import-Function Get-ItemUrl
+    Import-Function Send-TeamsNotification
+    
+    $webhooksItem = Get-Item -Path "master:" -ID "{AAEB319C-3BC9-411F-B0B9-721B5826AD0F}"
+    $configuredWebhooks = Get-ChildItem -Path "master:$($webhooksItem.ItemPath)" | Where-Object {-Not [string]::IsNullOrEmpty($_.PublishNotificationSettings)}
+    
+    if($configuredWebhooks.Count -eq 0){
+        return;
+    }
+    
+    #Handle Sitepublish notifications
+    
+    foreach($publishingTarget in $publishContext.PublishOptions.PublishingTargets){
+        $processedItemsAndReferrers = @()
+        $publishingTargetItem = Get-Item -Path "master:" -ID $publishingTarget
+        foreach($language in $publishContext.Languages){
+            foreach($key in $publishContext.ProcessedPublishingCandidates.Keys){
+                $processedItem = Get-Item -Path "$($publishContext.PublishOptions.TargetDatabase.Name):" -ID $key.ItemId -Language $language
+                $referrers = Get-ItemReferrer -Item $processedItem
+                $processedItemsAndReferrers += $processedItem
+                $processedItemsAndReferrers += $referrers
+            }
+            #Handle deletedcandidates
+        }
+        
+        $processedItemsAndReferrers = $processedItemsAndReferrers | Where-Object { (Get-Layout -Item $_) -ne $null } | sort -unique
+    
+        $configuredWebhooks | Foreach-Object{
+            $publishedLinks = @()
+            $publishNotificationEntries = $_.PublishNotificationSettings.Split('&');
+            for ($i=0; $i -lt $publishNotificationEntries.Length; $i++){
+                $contentLocation = [System.Web.HttpUtility]::UrlDecode($publishNotificationEntries[$i].Split('=')[0]);
+                $contentOptions = ([System.Web.HttpUtility]::UrlDecode($publishNotificationEntries[$i].Split('=')[1])).Split('|');
+                $language = $contentOptions[0];
+                $target = $contentOptions[1];
+                $subitems = $contentOptions[2];
+                
+                $itemsToNotify = $processedItemsAndReferrers | Where-Object { 
+                    ($target -eq 'All' -or $target -eq $publishingTargetItem.Name) -and 
+                    ($language -eq 'All' -or $language -eq $_.Language) -and 
+                    (($contentLocation -eq $_.ItemPath.Replace("/sitecore/", "")) -or (($subitems -eq $true) -and ($_.ItemPath -match $contentLocation)))}
+                $itemsToNotify | Foreach-Object {
+                    $publishedLinks += Get-ItemUrl -Item $_
+                }
+            }
+            $publishedLinks = $publishedLinks | sort -unique
+        
+            $user = Get-User -Current
+            $publicDomain = "https://www.sitecore.com" #Needs to be a publicly accessible domain (sitecore.com will work if using default profile pictures)
+            
+            $notificationDetails = [pscustomobject]@{ 
+                userProfilePicture = $publicDomain + "/~/icon/" + $user.Profile.Portrait;
+                itemName = $publishContext.PublishOptions.RootItem.DisplayName;
+                itemPath = $publishContext.PublishOptions.RootItem.Paths.FullPath;
+                language = $publishContext.Languages -Join ',';
+                subitems = $publishContext.PublishOptions.Deep;
+                relateditems = $publishContext.PublishOptions.PublishRelatedItems;
+                target = $publishContext.PublishOptions.PublishingTargets -Join ',';
+                summary = "$($user.Profile.FullName)($($user.Name)) has published '$($notificationDetails.itemName)' to '$($notificationDetails.target)'"
+            }
+            
+    $messageSchema = Get-Item -Path master: -ID "{01F5F4C7-CB59-498F-9C25-8F432EB6DB67}"
+    $message = $messageSchema.MessageSchema -replace '{summary}', 'summary' `
+                -replace '{title}', 'https://www.google.com <a href="https://www.google.com">test</a>'
+    #Get PageSpeed Insights for $publishedLinksInfo
+    #Check Sitemap Index Url? with Abhishek
+    #Send Teams Notification
+    
+    Send-TeamsNotification -Endpoint $_.WebhookEndpoint -Message $message
+    Exit
+        }
+    }
+    
+    
+    
+    #Return Updated Links list for logging?
+Languages:
+- Language: en
+  Versions:
+  - Version: 1
+    Fields:
+    - ID: "25bed78c-4957-4165-998a-ca1b52f67497"
+      Hint: __Created
+      Value: 20210608T002310Z
+    - ID: "52807595-0f8f-4b20-8d2a-cb71d28c6103"
+      Hint: __Owner
+      Value: |
+        sitecore\Admin
+    - ID: "5dd74568-4d4b-44c1-b513-0af5f4cda34f"
+      Hint: __Created by
+      Value: |
+        sitecore\Admin
+    - ID: "8cdc337e-a112-42fb-bbb4-4143751e123f"
+      Hint: __Revision
+      Value: "79c44e14-1174-40c4-b104-a7757a2b3913"
+    - ID: "badd9cf9-53e0-4d0c-bcc0-2d784c282f6a"
+      Hint: __Updated by
+      Value: |
+        sitecore\Admin
+    - ID: "d9cf14b1-fa16-4ba6-9288-e8a174d4d522"
+      Hint: __Updated
+      Value: 20210611T012851Z

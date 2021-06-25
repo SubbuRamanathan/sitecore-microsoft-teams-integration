@@ -8,13 +8,7 @@ SharedFields:
   Hint: Script
   Value: |
     function Get-HostUrl {
-        Import-Function Get-ItemUrl
-    
-        $contextSite = [Sitecore.Context]::Site
-        $startItem = $contextSite.Database.GetItem($contextSite.StartPath)
-        $startItemUrl = Get-ItemUrl -SiteContext $contextSite -Item $startItem
-        $startItemUri = [System.Uri]$startItemUrl
-        return $startItemUri.ToString().Replace($startItemUri.PathAndQuery, '')
+        return [Sitecore.Web.WebUtil]::GetServerUrl()
     }
 - ID: "ba3f86a2-4a1c-4d78-b63d-91c2779c1b5e"
   Hint: __Sortorder
@@ -37,11 +31,11 @@ Languages:
         sitecore\Admin
     - ID: "8cdc337e-a112-42fb-bbb4-4143751e123f"
       Hint: __Revision
-      Value: "01a23cc1-5131-4f93-8e6f-364005899de2"
+      Value: "76cfd121-d58e-47da-9ca3-16ab8a803439"
     - ID: "badd9cf9-53e0-4d0c-bcc0-2d784c282f6a"
       Hint: __Updated by
       Value: |
         sitecore\Admin
     - ID: "d9cf14b1-fa16-4ba6-9288-e8a174d4d522"
       Hint: __Updated
-      Value: 20210528T150446Z
+      Value: 20210610T172202Z

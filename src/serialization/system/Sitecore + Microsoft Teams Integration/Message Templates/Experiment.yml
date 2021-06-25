@@ -21,7 +21,7 @@ Languages:
         sitecore\Admin
     - ID: "8cdc337e-a112-42fb-bbb4-4143751e123f"
       Hint: __Revision
-      Value: "ddc4c622-6cc8-40ba-8184-cc1f5fc96179"
+      Value: "d7109656-1ffc-455f-a043-746d15c20fc7"
     - ID: "939782ea-0ac1-47f3-968d-e92109dd97bf"
       Hint: MessageSchema
       Value: |
@@ -31,7 +31,7 @@ Languages:
             "originator": "",
             "hideOriginalBody": "true",
             "themeColor": "ee3524",
-            "summary": "TEST message from Sitecore"
+            "summary": "TEST message from Sitecore",
             "title": "This is a TEST message sent from Sitecore using Teams Integration Module",
             "text": "Thank you for using this module! This module enhances the content authoring experience by sending instant alerts on Workflow & Publish updates",
             "potentialAction": [
@@ -64,4 +64,4 @@ Languages:
         sitecore\Admin
     - ID: "d9cf14b1-fa16-4ba6-9288-e8a174d4d522"
       Hint: __Updated
-      Value: 20210601T191142Z
+      Value: 20210611T012224Z
