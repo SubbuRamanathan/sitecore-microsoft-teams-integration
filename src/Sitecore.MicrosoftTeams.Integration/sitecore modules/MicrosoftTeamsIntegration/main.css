@@ -31,3 +31,18 @@ div[id*='workflowState'] div.validator{
 div[id*='workflowCommands'], div[id*='workflowState']{
 	padding-left: 2%;
 }
+form[action*='PowerShell-Runner'] .scFlexColumnContainer{
+	background: #f8f8f8 url(/sitecore%20modules/MicrosoftTeamsIntegration/module-background.png) top left no-repeat;
+}
+form[action*='PowerShell-Runner'] .scFlexColumnContainer > div{
+	display: none;
+}
+.ui-dialog{
+	left: 65% !important;
+    transform: translateX(-37.5%);
+}
+.teams-logo{
+	width: 25% !important;
+    margin-top: 10%;
+    margin-left: 12.5%;
+}

@@ -5,17 +5,26 @@ function main(){
 	initializeTabs();
 	initializeLinks();
 }
-
 function updateBackground(){
-	var backgroundContainer = window.top.document.getElementsByClassName('scFlexColumnContainer')[0];
-	backgroundContainer.style.background = '#f8f8f8 url(/sitecore%20modules/MicrosoftTeamsIntegration/module-background.png) top left no-repeat';
-	for(var i=0; i < backgroundContainer.children.length; i++){
-		backgroundContainer.children[i].style.display = 'none';
+	addStyleSheet(window.top.document);
+	insertLogo();
+	var powershellWindow = window.parent.document.getElementById('jqueryModalDialogsFrame');
+	if(powershellWindow){
+		addStyleSheet(powershellWindow.contentDocument);
+	}
+}	
+
+function insertLogo(){
+	if(window.top.document.getElementsByClassName('teams-logo').length == 0){
+		var imageElement = window.top.document.createElement('img'); 
+		imageElement.src = '/sitecore%20modules/MicrosoftTeamsIntegration/msteams.png';
+		imageElement.classList.add("teams-logo");
+		window.top.document.getElementsByClassName('scFlexColumnContainer')[0].appendChild(imageElement);
 	}
 }
 
 function handlePowershellWindowInserted(){
-	var iframes = document.getElementsByTagName("iframe");
+	var iframes = document.getElementsByTagName("iframe");	
 	for(var i = iframes.length; i--;){
 		iframes[i].contentDocument.addEventListener("DOMNodeInserted", function(e) {
 			if (e.target.tagName && e.target.tagName.toLowerCase() === 'iframe') {
@@ -52,11 +61,13 @@ function addScript(iFrameDocument){
 }
 
 function addStyleSheet(iFrameDocument){
-	var linkElement = iFrameDocument.createElement("link");
-	linkElement.type = "text/css";
-	linkElement.rel = "stylesheet";
-	linkElement.href = "/sitecore modules/MicrosoftTeamsIntegration/main.css";
-	iFrameDocument.head.appendChild(linkElement);
+	if(iFrameDocument.querySelectorAll('link[href$="main.css"]').length == 0){
+		var linkElement = iFrameDocument.createElement("link");
+		linkElement.type = "text/css";
+		linkElement.rel = "stylesheet";
+		linkElement.href = "/sitecore modules/MicrosoftTeamsIntegration/main.css";
+		iFrameDocument.head.appendChild(linkElement);
+	}
 }
 
 function initializeTabs(){
