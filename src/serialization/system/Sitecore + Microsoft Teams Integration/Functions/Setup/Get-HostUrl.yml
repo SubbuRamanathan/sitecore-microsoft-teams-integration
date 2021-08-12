@@ -8,6 +8,10 @@ SharedFields:
   Hint: Script
   Value: |
     function Get-HostUrl {
+        $generalSettingsItem = Get-Item -Path master: -ID "{DD896673-142D-446D-8C02-E6C52A184706}"
+        if($generalSettingsItem.SitecoreOrigin -ne ''){
+            return $generalSettingsItem.SitecoreOrigin
+        }
         return [Sitecore.Web.WebUtil]::GetServerUrl()
     }
 - ID: "ba3f86a2-4a1c-4d78-b63d-91c2779c1b5e"
@@ -31,11 +35,11 @@ Languages:
         sitecore\Admin
     - ID: "8cdc337e-a112-42fb-bbb4-4143751e123f"
       Hint: __Revision
-      Value: "76cfd121-d58e-47da-9ca3-16ab8a803439"
+      Value: "02f9ba9f-ad7e-4f57-bce9-cfb1006ef744"
     - ID: "badd9cf9-53e0-4d0c-bcc0-2d784c282f6a"
       Hint: __Updated by
       Value: |
         sitecore\Admin
     - ID: "d9cf14b1-fa16-4ba6-9288-e8a174d4d522"
       Hint: __Updated
-      Value: 20210610T172202Z
+      Value: 20210812T104113Z

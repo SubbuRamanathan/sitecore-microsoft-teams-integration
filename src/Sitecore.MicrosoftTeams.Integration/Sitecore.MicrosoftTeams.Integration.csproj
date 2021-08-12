@@ -13,7 +13,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Sitecore.MicrosoftTeams.Integration</RootNamespace>
     <AssemblyName>Sitecore.MicrosoftTeams.Integration</AssemblyName>
-    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <UseIISExpress>true</UseIISExpress>
     <Use64BitIISExpress />
     <IISExpressSSLPort />
@@ -45,8 +45,8 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.CSharp" />
-    <Reference Include="Sitecore.Kernel, Version=16.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>packages\Sitecore.Kernel.10.1.0\lib\net48\Sitecore.Kernel.dll</HintPath>
+    <Reference Include="Sitecore.Kernel, Version=13.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\Sitecore.Kernel.9.2.0\lib\net471\Sitecore.Kernel.dll</HintPath>
     </Reference>
     <Reference Include="Spe, Version=6.0.0.30918, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -92,6 +92,10 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="lib\Spe.dll" />
+    <Content Include="sitecore modules\MicrosoftTeamsIntegration\main.css" />
+    <Content Include="sitecore modules\MicrosoftTeamsIntegration\main.js" />
+    <Content Include="sitecore modules\MicrosoftTeamsIntegration\module-background.png" />
+    <Content Include="sitecore modules\MicrosoftTeamsIntegration\msteams.png" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />

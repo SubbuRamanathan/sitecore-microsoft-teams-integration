@@ -8,26 +8,22 @@ SharedFields:
   Hint: Script
   Value: |
     Import-Function Send-TeamsNotification
-    
+    Import-Function Get-Template
+    Import-Function Get-TestMessageActions
+    Import-Function Compose-Background
+        
     $endpointUrl = Show-Input "Please Confirm Endpoint"
     if($endpointUrl){
-        $testEndpointSchemaItem = Get-Item -Path master: -ID "{3BA84DF9-3DF7-40BD-8982-9619CB3529D3}";
-        $isMessageSendingFailed = $false;
-        try
-        {
-            $result = Send-TeamsNotification -Endpoint $endpointUrl -Message $testEndpointSchemaItem.MessageSchema
-        }
-        catch
-        {
-            $isMessageSendingFailed = $true;
-            Show-Alert "Test Message failed to send. Please review and update the Url or Try again.";
-        }
-        if(!$isMessageSendingFailed){
-            Show-Alert "Test Message sent successfully!"
-        }
+    	$testMessageSchema = Get-Template "Experiment";
+    	$testMessageSchema = $testMessageSchema -replace '{actions}', (Get-TestMessageActions) `
+    	                            -replace '{backgroundImage}', (Compose-Background)
+    	$result = Send-TeamsNotification -Endpoint $endpointUrl -Message $testMessageSchema
+    	if($result -eq 1){
+    		Show-Alert "Test Message sent successfully!"
+    	}
     }
     else{
-        Show-Alert "Please specify a Teams Endpoint Url"
+    	Show-Alert "Please specify a Teams Endpoint Url"
     }
     Close-Window
 Languages:
@@ -48,11 +44,11 @@ Languages:
         sitecore\Admin
     - ID: "8cdc337e-a112-42fb-bbb4-4143751e123f"
       Hint: __Revision
-      Value: "b490c8a8-007d-4a79-ac41-dfd35d7e9af0"
+      Value: "e45d9ab0-2bd6-4081-9f34-fa6c96e82d6a"
     - ID: "badd9cf9-53e0-4d0c-bcc0-2d784c282f6a"
       Hint: __Updated by
       Value: |
         sitecore\Admin
     - ID: "d9cf14b1-fa16-4ba6-9288-e8a174d4d522"
       Hint: __Updated
-      Value: 20210531T212118Z
+      Value: 20210809T223715Z

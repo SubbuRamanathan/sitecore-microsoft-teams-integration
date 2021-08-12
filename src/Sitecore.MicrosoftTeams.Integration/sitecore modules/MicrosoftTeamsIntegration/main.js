@@ -5,6 +5,7 @@ function main(){
 	initializeTabs();
 	initializeLinks();
 }
+
 function updateBackground(){
 	addStyleSheet(window.top.document);
 	insertLogo();
@@ -71,6 +72,7 @@ function addStyleSheet(iFrameDocument){
 }
 
 function initializeTabs(){
+	populateSitecoreOrigin();
 	configureTooltips();
 	appendAllOptionToDropdowns();	
 }
@@ -130,10 +132,16 @@ function getInnerText(element){
 }
 
 function appendAllOptionToDropdowns(){
-	document.querySelectorAll("select.scCombobox").forEach(function(select){
+	document.querySelectorAll("select.scCombobox:not([id*=pagespeedStrategy])").forEach(function(select){
 		select.firstChild.text = 'All';
 		select.firstChild.value = '';
 	});
+}
+
+function populateSitecoreOrigin(){
+	var sitecoreOriginElement = document.querySelector('input[id*="variable_sitecoreOrigin"]');
+	if(sitecoreOriginElement && sitecoreOriginElement.value == '')
+		sitecoreOriginElement.value = window.origin;
 }
 
 function addPublishEntry(){
@@ -171,6 +179,7 @@ function addPublishEntry(){
 }
 
 function deletePublishEntry(element, notificationSetting){
+	debugger;
 	var deleteButtonSection = element.closest('div[id*="publishDeleteOption"]');
 	while (deleteButtonSection.previousSibling.id.indexOf('publishDeleteOption') === -1){
 		deleteButtonSection.previousSibling.remove();
@@ -178,7 +187,9 @@ function deletePublishEntry(element, notificationSetting){
 	deleteButtonSection.remove();
 	
 	var publishSettingsElement = document.querySelector('input[id*="publishNotificationSettings"]');
-	publishSettingsElement.value = publishSettingsElement.value.replace(notificationSetting, "");
+	publishSettingsElement.value = (publishSettingsElement.value.endsWith(notificationSetting)) ?
+		publishSettingsElement.value.replace(notificationSetting, "") :
+		publishSettingsElement.value.replace(notificationSetting + '&', "");
 	publishSettingsElement.value = publishSettingsElement.value.replace(/^&/, "").replace(/\&$/, "");
 }
 

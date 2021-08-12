@@ -45,8 +45,8 @@ namespace Sitecore.MicrosoftTeams.Integration.Publish
                 using (ScriptSession scriptSession = ScriptSessionManager.NewSession(ApplicationNames.Default, true))
                 {
                     scriptSession.SetVariable("publishContext", publishContext);
-                    var updatedLinks = scriptSession.ExecuteScriptPart(scriptItem, true);
-                    PowerShellLog.Info($"Job ended: Send Teams Notification (modified links: {updatedLinks[0]})");
+                    scriptSession.ExecuteScriptPart(scriptItem, true);
+                    PowerShellLog.Info($"Job ended: Send Teams Notification");
                 }
             }
             catch (Exception ex)

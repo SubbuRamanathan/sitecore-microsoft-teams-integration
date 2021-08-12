@@ -15,12 +15,14 @@ SharedFields:
         )
         
         Import-Function Send-TeamsNotification
+        Import-Function Get-Template
+        Import-Function Compose-Background
         
         $webhookItem = Get-Item -Path master: -ID $WebhookID
         $endpoint = $webhookItem.WebhookEndpoint
     
-        $messageSchema = Get-Item -Path master: -ID "{0797BAD1-0A60-4FB9-993A-E204190CBF0E}"
-        $message = $messageSchema.MessageSchema -replace '{summary}', $NotificationDetails.summary `
+        $messageSchema = Get-Template "Workflow Status Update"
+        $message = $messageSchema -replace '{summary}', $NotificationDetails.summary `
                     -replace '{title}', $NotificationDetails.title `
                     -replace '{subtitle}', $NotificationDetails.subtitle `
                     -replace '{themeColor}', $NotificationDetails.themeColor `
@@ -28,10 +30,12 @@ SharedFields:
                     -replace '{itemPath}', $NotificationDetails.itemPath `
                     -replace '{language}', $NotificationDetails.language `
                     -replace '{comments}', $NotificationDetails.comments `
-                    -replace '{actions}', $NotificationDetails.actions
+                    -replace '{actions}', $NotificationDetails.actions `
+                    -replace "{backgroundImage}", (Compose-Background)
     
         Send-TeamsNotification -Endpoint $endpoint -Message $message
     }
+    Close-Window
 - ID: "ba3f86a2-4a1c-4d78-b63d-91c2779c1b5e"
   Hint: __Sortorder
   Value: 800
@@ -53,11 +57,11 @@ Languages:
         sitecore\Admin
     - ID: "8cdc337e-a112-42fb-bbb4-4143751e123f"
       Hint: __Revision
-      Value: "1c1fb402-0f65-4495-bdd3-e2499b935690"
+      Value: "27115784-c1bc-4969-8c84-b8658df444da"
     - ID: "badd9cf9-53e0-4d0c-bcc0-2d784c282f6a"
       Hint: __Updated by
       Value: |
         sitecore\Admin
     - ID: "d9cf14b1-fa16-4ba6-9288-e8a174d4d522"
       Hint: __Updated
-      Value: 20210609T145513Z
+      Value: 20210812T151126Z

@@ -1,0 +1,53 @@
+﻿---
+ID: "4a6b804d-0cf2-4bc7-971e-8dfad2bc1f95"
+Parent: "167a8a05-2f6d-49e5-80af-47abbccd52ab"
+Template: "dd22f1b3-bd87-4db2-9e7d-f7a496888d43"
+Path: "/sitecore/system/Modules/PowerShell/Script Library/Sitecore + Microsoft Teams Integration/Functions/Composition/Get-Template"
+SharedFields:
+- ID: "b1a94ff0-6897-47c0-9c51-aa6acb80b1f0"
+  Hint: Script
+  Value: |
+    function Get-Template {
+        [CmdletBinding()]
+        param(
+            [string]$TemplateName
+        )
+        
+        Import-Function Is-NewLookEnabled
+        
+        $schemaFolderID = @("{117F17BE-2432-4795-8674-92FA5E99098B}", "{799706B7-6443-4312-AD02-F9FEAEA1FEE8}")[(Is-NewLookEnabled)]
+        $schemaFolder = Get-Item -Path master: -ID $schemaFolderID
+        
+        $schemaItemPath = "master:$($schemaFolder.ItemPath)/$TemplateName"
+        if(Test-Path -Path $schemaItemPath){
+            $schemaItem = Get-Item -Path $schemaItemPath
+            return $schemaItem.MessageSchema
+        }
+        return ""
+    }
+Languages:
+- Language: en
+  Versions:
+  - Version: 1
+    Fields:
+    - ID: "25bed78c-4957-4165-998a-ca1b52f67497"
+      Hint: __Created
+      Value: 20210809T123917Z
+    - ID: "52807595-0f8f-4b20-8d2a-cb71d28c6103"
+      Hint: __Owner
+      Value: |
+        sitecore\Admin
+    - ID: "5dd74568-4d4b-44c1-b513-0af5f4cda34f"
+      Hint: __Created by
+      Value: |
+        sitecore\Admin
+    - ID: "8cdc337e-a112-42fb-bbb4-4143751e123f"
+      Hint: __Revision
+      Value: "43535680-3787-45f8-a5f1-742fae8e38c8"
+    - ID: "badd9cf9-53e0-4d0c-bcc0-2d784c282f6a"
+      Hint: __Updated by
+      Value: |
+        sitecore\Admin
+    - ID: "d9cf14b1-fa16-4ba6-9288-e8a174d4d522"
+      Hint: __Updated
+      Value: 20210810T001434Z

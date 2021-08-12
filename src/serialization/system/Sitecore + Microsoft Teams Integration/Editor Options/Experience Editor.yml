@@ -13,7 +13,7 @@ Languages:
       Value: 20210601T175657Z
     - ID: "36db011e-c1da-4192-9a23-78bad3ed05b2"
       Hint: EditorName
-      Value: Edit in Experience Editor
+      Value: Edit in Experience Editor &#x1F58D;
     - ID: "52807595-0f8f-4b20-8d2a-cb71d28c6103"
       Hint: __Owner
       Value: |
@@ -27,11 +27,14 @@ Languages:
       Value: "{cm-url}{path}?sc_mode=edit&sc_site={site}"
     - ID: "8cdc337e-a112-42fb-bbb4-4143751e123f"
       Hint: __Revision
-      Value: "415aeb39-bd6c-46a9-bfa9-e548b110b6ae"
+      Value: "c75c97d5-b975-4515-aa54-d484dc6333f0"
     - ID: "badd9cf9-53e0-4d0c-bcc0-2d784c282f6a"
       Hint: __Updated by
       Value: |
         sitecore\Admin
     - ID: "d9cf14b1-fa16-4ba6-9288-e8a174d4d522"
       Hint: __Updated
-      Value: 20210602T200158Z
+      Value: 20210810T110707Z
+    - ID: "dface4d4-68f9-4121-85de-580dbeb6e780"
+      Hint: ExcludeForDatasourceItems
+      Value: 1

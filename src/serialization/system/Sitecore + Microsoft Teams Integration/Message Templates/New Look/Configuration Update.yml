@@ -1,0 +1,57 @@
+﻿---
+ID: "3ebb2417-73d2-4be6-8749-868ec62652b4"
+Parent: "799706b7-6443-4312-ad02-f9feaea1fee8"
+Template: "a1e282fa-0463-4504-87a4-5cc8b1ce95c1"
+Path: /sitecore/system/Modules/PowerShell/Script Library/Sitecore + Microsoft Teams Integration/Message Templates/New Look/Configuration Update
+Languages:
+- Language: en
+  Versions:
+  - Version: 1
+    Fields:
+    - ID: "25bed78c-4957-4165-998a-ca1b52f67497"
+      Hint: __Created
+      Value: 20210531T154658Z
+    - ID: "52807595-0f8f-4b20-8d2a-cb71d28c6103"
+      Hint: __Owner
+      Value: |
+        sitecore\Admin
+    - ID: "5dd74568-4d4b-44c1-b513-0af5f4cda34f"
+      Hint: __Created by
+      Value: |
+        sitecore\Admin
+    - ID: "8cdc337e-a112-42fb-bbb4-4143751e123f"
+      Hint: __Revision
+      Value: "21b1ce69-e088-466b-8418-ad1aa8ab5ad7"
+    - ID: "939782ea-0ac1-47f3-968d-e92109dd97bf"
+      Hint: MessageSchema
+      Value: |
+        {
+            "@context": "http://schema.org/extensions",
+            "@type": "MessageCard",
+            "originator": "",
+            "hideOriginalBody": "true",
+            "themeColor": "ee3524",
+            "summary": "{title}",
+        	"sections": [{
+                "activityTitle": "{title}",
+                "activitySubtitle": "{text}",
+        		"facts": [
+                    {
+        				"name": "",
+        				"value": "<div>{backgroundImage}</div>"
+        			},
+                    {
+        				"name": "",
+        				"value": "<div style=\"position:relative;margin-left:-16px\">{actions}</div>"
+        			}
+                ],
+                "markdown": true
+            }]
+        }
+    - ID: "badd9cf9-53e0-4d0c-bcc0-2d784c282f6a"
+      Hint: __Updated by
+      Value: |
+        sitecore\Admin
+    - ID: "d9cf14b1-fa16-4ba6-9288-e8a174d4d522"
+      Hint: __Updated
+      Value: 20210810T101023Z

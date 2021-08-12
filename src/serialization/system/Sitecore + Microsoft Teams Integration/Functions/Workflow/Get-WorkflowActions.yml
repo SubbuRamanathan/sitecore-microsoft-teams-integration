@@ -1,0 +1,117 @@
+﻿---
+ID: "d2710cfc-a331-48e7-9ea2-3741622702e1"
+Parent: "6bb3459a-491c-4a7a-b8d1-ed1e223624ec"
+Template: "dd22f1b3-bd87-4db2-9e7d-f7a496888d43"
+Path: "/sitecore/system/Modules/PowerShell/Script Library/Sitecore + Microsoft Teams Integration/Functions/Workflow/Get-WorkflowActions"
+SharedFields:
+- ID: "b1a94ff0-6897-47c0-9c51-aa6acb80b1f0"
+  Hint: Script
+  Value: |
+    function Get-WorkflowActions {
+        [CmdletBinding()]
+        param(
+            [item]$WorkflowState,
+            [bool]$IsApproved
+        )
+        
+        Import-Function Get-ContextItemSite
+        Import-Function Get-ItemUrl
+        Import-Function Get-HostUrl
+        Import-Function Compose-Action
+    
+        $generalSettingsItem = Get-Item -Path master: -ID "{DD896673-142D-446D-8C02-E6C52A184706}"
+        
+        $encodedId = [System.Web.HttpUtility]::UrlEncode($SitecoreContextItem.ID.ToString().ToUpper())
+        $language = $SitecoreContextItem.Language.Name
+        $version = $SitecoreContextItem.Version
+        $site = (Get-ContextItemSite $SitecoreContextItem).Name
+    
+        $hostUrl = Get-HostUrl
+        $horizonUrl = [Sitecore.Configuration.Settings]::GetSetting("Horizon.ClientHost");
+        [System.Uri]$publishedUrl = Get-ItemUrl -Item $SitecoreContextItem
+        $path = $publishedUrl.AbsolutePath
+        
+        $actions = ""
+        if($WorkflowState){
+            $commandUrl = "$hostUrl/sitecore/shell/feeds/action.aspx?c=Workflow&id=$encodedId&la=$language&v=$version&nc=1&cmd="
+            
+            $database = Get-Database -Name "master"
+            $workflowItemId = $WorkflowState.Parent.ID.ToString()
+            $commands = $database.WorkflowProvider.GetWorkflow($workflowItemId).GetCommands($WorkflowState.ID.ToString())
+            foreach($command in $commands){
+                $actionUrl = $commandUrl + [System.Web.HttpUtility]::UrlEncode($command.CommandID)
+                
+                $actionName = ("$($command.DisplayName) &#x1F4AC;","$($command.DisplayName) &#x2714;")[(isApproveCommand $command)]
+                $actions += Compose-Action $actionName $actionUrl
+            }
+        }
+        
+        if(Get-Layout $SitecoreContextItem)
+        {
+            $previewUrl = "$hostUrl$($path)?sc_mode=preview&sc_site=$site"
+            if($IsApproved){
+                $actions += Compose-Action "View &#x279C;" $publishedUrl
+            }
+            else{
+                $actions += Compose-Action "Preview &#x279C;" $previewUrl
+            }
+        }
+        
+        $generalSettingsItem.PreferredEditor.Split('|') | Foreach-Object {
+            $editorItem = Get-Item -Path master: -ID $_
+            if((Get-Layout $SitecoreContextItem) -or (-not $editorItem.ExcludeForDatasourceItems)){
+                if($editorItem.EditorUrlFormat -inotmatch '{horizon-url}' -or $horizonUrl){
+                    $actionUrl = $editorItem.EditorUrlFormat  -replace '{cm-url}', $hostUrl `
+                            -replace '{horizon-url}', $horizonUrl `
+                            -replace '{id}', $encodedId `
+                            -replace '{lang}', $language `
+                            -replace '{path}', $path `
+                            -replace '{site}', $site
+                    $actions += Compose-Action $editorItem.EditorName $actionUrl
+                }
+            }
+        }
+        
+        return $actions.TrimEnd(",")
+    }
+    
+    function isApproveCommand($command){
+        $commandItem = Get-Item -Path master: -ID $command.CommandID
+        $nextStateID = $commandItem | Get-ItemField -ReturnType Field -Name "Next state"
+        $nextState = Get-Item master: -ID $nextStateID 
+        
+        if($nextState){
+            $isFinal = $nextState | Get-ItemField -ReturnType Field -Name "Final" | Select-Object -Expand Value
+            return $isFinal;
+        }
+        return $false;
+    }
+- ID: "ba3f86a2-4a1c-4d78-b63d-91c2779c1b5e"
+  Hint: __Sortorder
+  Value: 800
+Languages:
+- Language: en
+  Versions:
+  - Version: 1
+    Fields:
+    - ID: "25bed78c-4957-4165-998a-ca1b52f67497"
+      Hint: __Created
+      Value: 20210528T150130Z
+    - ID: "52807595-0f8f-4b20-8d2a-cb71d28c6103"
+      Hint: __Owner
+      Value: |
+        sitecore\Admin
+    - ID: "5dd74568-4d4b-44c1-b513-0af5f4cda34f"
+      Hint: __Created by
+      Value: |
+        sitecore\Admin
+    - ID: "8cdc337e-a112-42fb-bbb4-4143751e123f"
+      Hint: __Revision
+      Value: "8595dbdd-ad2e-4f3d-8959-25d71eba7a93"
+    - ID: "badd9cf9-53e0-4d0c-bcc0-2d784c282f6a"
+      Hint: __Updated by
+      Value: |
+        sitecore\Admin
+    - ID: "d9cf14b1-fa16-4ba6-9288-e8a174d4d522"
+      Hint: __Updated
+      Value: 20210810T104322Z

@@ -71,7 +71,7 @@ SharedFields:
     	}
     
     	$publishTab=@(
-    		@{ Tab="PUBLISH"; Name="publishInfo"; Title=""; Value="List all the content locations to receive change notifications for published items and links"; Editor="info"; ParentGroupId=1; HideOnValue="0"; },
+    		@{ Tab="PUBLISH"; Name="publishInfo"; Title=""; Value="List all the content locations to receive notifications when the item or at least one of it's referrers is published"; Editor="info"; ParentGroupId=1; HideOnValue="0"; },
     		@{ Tab="PUBLISH"; Name="publishLocationTitle"; Title="Content Path"; Editor="info"; Columns=5; ParentGroupId=2; HideOnValue="0"; },
     		@{ Tab="PUBLISH"; Name="publishLanguageTitle"; Title="Content Language"; Editor="info"; Columns=2; ParentGroupId=2; HideOnValue="0"; },
     		@{ Tab="PUBLISH"; Name="publishTargetTitle"; Title="Publishing Target"; Editor="info"; Columns=2; ParentGroupId=2; HideOnValue="0"; },
@@ -122,7 +122,6 @@ SharedFields:
         	OkButtonName = $okButtonName
         	CancelButtonName = "Cancel"
         	ShowHints = $true
-        	Icon = "office/16x16/graph_triangle.png"
         	Parameters = $allTabs
         }
         
@@ -174,7 +173,7 @@ SharedFields:
         	        Delete-NotificationAction -WorkflowCommandItemID $workflowCommandItem.ID -WebhookItem $selectedWebhookItem
         	    }
             }
-            Send-UpdateNotification -Endpoint $endpoint -Message $notificationMessage -IsNewEndpoint $isCreateRequest
+            Send-UpdateNotification -Endpoint $endpoint -IsNewEndpoint $isCreateRequest
             
             Invoke-Javascript "window.top.location.reload()"
         }
@@ -200,11 +199,11 @@ Languages:
         sitecore\Admin
     - ID: "8cdc337e-a112-42fb-bbb4-4143751e123f"
       Hint: __Revision
-      Value: "679807d2-20c2-40b3-b7fb-3f9c10544d90"
+      Value: "4cccb7d6-b4fa-47ad-9e51-51527d512200"
     - ID: "badd9cf9-53e0-4d0c-bcc0-2d784c282f6a"
       Hint: __Updated by
       Value: |
         sitecore\Admin
     - ID: "d9cf14b1-fa16-4ba6-9288-e8a174d4d522"
       Hint: __Updated
-      Value: 20210602T205712Z
+      Value: 20210811T135206Z

@@ -11,17 +11,26 @@ SharedFields:
         [CmdletBinding()]
         param(
             [string]$Endpoint,
-            [string]$Message,
             [bool]$IsNewEndpoint
         )
         
         Import-Function Send-TeamsNotification
+        Import-Function Get-Template
+        Import-Function Get-HostUrl
+        Import-Function Compose-Action
+        Import-Function Compose-Background
         
-        $notificationMessageSchema = Get-Item -Path master: -ID "{013735CF-326C-48CD-B3F6-C94A5AA5247C}";
-        $notificationMessageTitle = @("","Teams Endpoint configured successfully!")[$IsNewEndpoint]
-        $notificationMessageText = @("This message confirms that this Teams Endpoint has been configured successfully in Sitecore and will start receiving notifications. Please make sure to select the right Workflow States and/or Publish Content Locations in the Sitecore Module Configuration page to receive appropriate notifications. Thank you for using this module!","Teams Endpoint configuration has been updated!")[$WebhookID -ne $null]
+        $notificationMessageSchema = Get-Template "Configuration Update";
+        $notificationMessageTitle = @("Teams Endpoint configuration has been updated!","Teams Endpoint configured successfully!")[$IsNewEndpoint]
+        $notificationMessageText = @("", "This message confirms that this Teams Endpoint has been configured successfully in Sitecore and will start receiving notifications. Please make sure to select the right Workflow States and/or Publish Content Locations in the Sitecore Module Configuration page to receive appropriate notifications. Thank you for using this module!")[$IsNewEndpoint]
+        
         $notificationMessageLink = "$(Get-HostUrl)/sitecore/shell/Applications/PowerShell/PowerShell-Runner?scriptDb=master&scriptId=%7b0FAB3B7E-CF83-42BF-9214-56CEC520CBF5%7d&sc_bw=1"
-        $notificationMessage = $notificationMessageSchema.MessageSchema.Replace("{title}", $notificationMessageTitle).Replace("{text}", $notificationMessageText).Replace("{url}", $notificationMessageLink)
+        $actions = Compose-Action "View/Change Notification Settings <span style='font-size: 1.4em;'>&#x2699;</span>" $notificationMessageLink
+        
+        $notificationMessage = $notificationMessageSchema -replace "{title}", $notificationMessageTitle `
+                                    -replace "{text}", $notificationMessageText `
+                                    -replace "{actions}", $actions.TrimEnd(',') `
+                                    -replace "{backgroundImage}", (Compose-Background)
         Send-TeamsNotification -Endpoint $endpoint -Message $notificationMessage
     }
 - ID: "ba3f86a2-4a1c-4d78-b63d-91c2779c1b5e"
@@ -45,11 +54,11 @@ Languages:
         sitecore\Admin
     - ID: "8cdc337e-a112-42fb-bbb4-4143751e123f"
       Hint: __Revision
-      Value: "7c91db05-9ddc-4e91-850e-afeb404200a7"
+      Value: "1442cb3f-f16f-4dff-81e2-0905388dd3e0"
     - ID: "badd9cf9-53e0-4d0c-bcc0-2d784c282f6a"
       Hint: __Updated by
       Value: |
         sitecore\Admin
     - ID: "d9cf14b1-fa16-4ba6-9288-e8a174d4d522"
       Hint: __Updated
-      Value: 20210601T205051Z
+      Value: 20210810T094348Z

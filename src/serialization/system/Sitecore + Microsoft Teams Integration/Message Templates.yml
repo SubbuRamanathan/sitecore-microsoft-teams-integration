@@ -1,5 +1,5 @@
 ﻿---
-ID: "117f17be-2432-4795-8674-92fa5e99098b"
+ID: "bf267271-add2-4e1b-b318-0592afa26343"
 Parent: "9d65d47d-1407-4c77-8ab1-749fb687c2cd"
 Template: "a87a00b1-e6db-45ab-8b54-636fec3b5523"
 Path: /sitecore/system/Modules/PowerShell/Script Library/Sitecore + Microsoft Teams Integration/Message Templates
@@ -7,12 +7,9 @@ SharedFields:
 - ID: "06d5295c-ed2f-4a54-9bf2-26228d113318"
   Hint: __Icon
   Value: office/32x32/folder_open.png
-- ID: "1172f251-dad4-4efb-a329-0c63500e4f1e"
-  Hint: __Masters
-  Value: "{A1E282FA-0463-4504-87A4-5CC8B1CE95C1}"
 - ID: "ba3f86a2-4a1c-4d78-b63d-91c2779c1b5e"
   Hint: __Sortorder
-  Value: 150
+  Value: 125
 Languages:
 - Language: en
   Versions:
@@ -20,14 +17,14 @@ Languages:
     Fields:
     - ID: "25bed78c-4957-4165-998a-ca1b52f67497"
       Hint: __Created
-      Value: 20210518T230402Z
+      Value: 20210809T113115Z
     - ID: "8cdc337e-a112-42fb-bbb4-4143751e123f"
       Hint: __Revision
-      Value: "38ce47d1-fcf6-4539-acbc-ca83f13e6ace"
+      Value: "77cb3399-e2e0-4c1c-bedf-3320341ae31e"
     - ID: "badd9cf9-53e0-4d0c-bcc0-2d784c282f6a"
       Hint: __Updated by
       Value: |
         sitecore\Admin
     - ID: "d9cf14b1-fa16-4ba6-9288-e8a174d4d522"
       Hint: __Updated
-      Value: 20210531T154603Z
+      Value: 20210809T113207Z

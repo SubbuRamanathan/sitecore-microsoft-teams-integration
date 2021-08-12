@@ -13,12 +13,16 @@ SharedFields:
             [item]$Item
         )
         
-        $associatedSiteContext = [Sitecore.Sites.SiteContextFactory]::Sites | Where-Object {$_.HostName -ne "" -and $Item.Paths.FullPath.StartsWith($_.RootPath + $_.StartItem, "CurrentCultureIgnoreCase")}
+        $associatedSiteContext = [Sitecore.Sites.SiteContextFactory]::Sites | Where-Object {$Item.Paths.FullPath.StartsWith($_.RootPath + $_.StartItem, "CurrentCultureIgnoreCase")}
         if($associatedSiteContext.Count -gt 1){
-            return $associatedSiteContext | Where-Object { $_.Database -eq $Item.Database }
+            $closestAssociatedSiteContext = $associatedSiteContext | Where-Object { $_.HostName -ne "" -or $_.TargetHostName -ne ""}
+            if($closestAssociatedSiteContext.Count -ne 1){
+                $closestAssociatedSiteContext = $associatedSiteContext | Where-Object { $_.Database -eq $Item.Database }
+            }
+            return $closestAssociatedSiteContext[0]
         }
         
-        return $associatedSiteContext
+        return $associatedSiteContext[0]
     }
 - ID: "ba3f86a2-4a1c-4d78-b63d-91c2779c1b5e"
   Hint: __Sortorder
@@ -41,14 +45,14 @@ Languages:
         sitecore\Admin
     - ID: "8cdc337e-a112-42fb-bbb4-4143751e123f"
       Hint: __Revision
-      Value: "79a66302-c64e-46fe-8203-a61fc5f32c73"
+      Value: "90ebdfba-a96b-4e2b-b1c0-d251404d7faf"
     - ID: "badd9cf9-53e0-4d0c-bcc0-2d784c282f6a"
       Hint: __Updated by
       Value: |
         sitecore\Admin
     - ID: "d9cf14b1-fa16-4ba6-9288-e8a174d4d522"
       Hint: __Updated
-      Value: 20210610T161136Z
+      Value: 20210812T122746Z
 - Language: "fr-CA"
   Versions:
   - Version: 1

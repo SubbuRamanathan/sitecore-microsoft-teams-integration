@@ -8,7 +8,6 @@ SharedFields:
   Hint: Script
   Value: |
     function Inject-Scripts {
-        #Invoke-Javascript -Script 'jQuery.ajax({async: false,url: "/sitecore modules/MicrosoftTeamsIntegration/main.js",dataType: "script"});'
         Invoke-Javascript -Script 'var xhr=new XMLHttpRequest;xhr.open("GET","/sitecore%20modules/MicrosoftTeamsIntegration/main.js",!1),xhr.onreadystatechange=function(){var e=document.createElement("script");e.type="text/javascript",e.text=xhr.responseText,document.body.appendChild(e)},xhr.send();'
     }
 - ID: "ba3f86a2-4a1c-4d78-b63d-91c2779c1b5e"
@@ -32,11 +31,11 @@ Languages:
         sitecore\Admin
     - ID: "8cdc337e-a112-42fb-bbb4-4143751e123f"
       Hint: __Revision
-      Value: "caf0924e-3094-4089-b0cd-a34e997ca9ca"
+      Value: "63aa947b-6dda-4d41-84a0-b0c18f717a5b"
     - ID: "badd9cf9-53e0-4d0c-bcc0-2d784c282f6a"
       Hint: __Updated by
       Value: |
         sitecore\Admin
     - ID: "d9cf14b1-fa16-4ba6-9288-e8a174d4d522"
       Hint: __Updated
-      Value: 20210528T150648Z
+      Value: 20210812T150507Z

@@ -1,0 +1,89 @@
+﻿---
+ID: "4c6d40a6-8c8d-4b3c-80c1-d905611a2618"
+Parent: "25a82294-f9bc-4c0b-bca0-da1e48542a83"
+Template: "dd22f1b3-bd87-4db2-9e7d-f7a496888d43"
+Path: "/sitecore/system/Modules/PowerShell/Script Library/Sitecore + Microsoft Teams Integration/Functions/Publish/Get-PublishActions"
+SharedFields:
+- ID: "b1a94ff0-6897-47c0-9c51-aa6acb80b1f0"
+  Hint: Script
+  Value: |
+    function Get-PublishActions {
+        [CmdletBinding()]
+        param(
+            [item]$PublishedItem
+        )
+        
+        Import-Function Get-ContextItemSite
+        Import-Function Get-ItemUrl
+        Import-Function Get-HostUrl
+        Import-Function Compose-Action
+    
+        $generalSettingsItem = Get-Item -Path master: -ID "{DD896673-142D-446D-8C02-E6C52A184706}"
+        
+        $language = $PublishedItem.Language.Name
+        $site = (Get-ContextItemSite $PublishedItem).Name
+        $encodedId = [System.Web.HttpUtility]::UrlEncode($PublishedItem.ID.ToString().ToUpper())
+    
+        $hostUrl = Get-HostUrl
+        $horizonUrl = [Sitecore.Configuration.Settings]::GetSetting("Horizon.ClientHost");
+        [System.Uri]$publishedUrl = Get-ItemUrl -Item $PublishedItem
+        $path = $publishedUrl.AbsolutePath
+        
+        $actions = ''
+        
+        if(Get-Layout $PublishedItem)
+        {
+            $actions += Compose-Action 'View &#x279C;' $publishedUrl
+        }
+        
+        $generalSettingsItem.PreferredEditor.Split('|') | Foreach-Object {
+            $editorItem = Get-Item -Path master: -ID $_
+            if((Get-Layout $PublishedItem) -or (-not $editorItem.ExcludeForDatasourceItems)){
+                if($editorItem.EditorUrlFormat -inotmatch '{horizon-url}' -or $horizonUrl){
+                    $actionUrl = $editorItem.EditorUrlFormat  -replace '{cm-url}', $hostUrl `
+                            -replace '{horizon-url}', $horizonUrl `
+                            -replace '{id}', $encodedId `
+                            -replace '{lang}', $language `
+                            -replace '{path}', $path `
+                            -replace '{site}', $site
+                    $actions += Compose-Action $editorItem.EditorName $actionUrl
+                }
+            }
+        }
+        
+        $encodedSitemapUrl = [System.Web.HttpUtility]::UrlEncode($generalSettingsItem.SitemapUrl)
+        if($encodedSitemapUrl.Trim() -ne ''){
+            $actions += Compose-Action 'Request Indexing &#x1F516;' "http://www.google.com/ping?sitemap=$encodedSitemapUrl"
+        }
+        
+        return $actions.TrimEnd(',')
+    }
+- ID: "ba3f86a2-4a1c-4d78-b63d-91c2779c1b5e"
+  Hint: __Sortorder
+  Value: 800
+Languages:
+- Language: en
+  Versions:
+  - Version: 1
+    Fields:
+    - ID: "25bed78c-4957-4165-998a-ca1b52f67497"
+      Hint: __Created
+      Value: 20210528T150130Z
+    - ID: "52807595-0f8f-4b20-8d2a-cb71d28c6103"
+      Hint: __Owner
+      Value: |
+        sitecore\Admin
+    - ID: "5dd74568-4d4b-44c1-b513-0af5f4cda34f"
+      Hint: __Created by
+      Value: |
+        sitecore\Admin
+    - ID: "8cdc337e-a112-42fb-bbb4-4143751e123f"
+      Hint: __Revision
+      Value: "eb10ad88-e0b9-4527-b0d8-6c989b0170ba"
+    - ID: "badd9cf9-53e0-4d0c-bcc0-2d784c282f6a"
+      Hint: __Updated by
+      Value: |
+        sitecore\Admin
+    - ID: "d9cf14b1-fa16-4ba6-9288-e8a174d4d522"
+      Hint: __Updated
+      Value: 20210811T151435Z

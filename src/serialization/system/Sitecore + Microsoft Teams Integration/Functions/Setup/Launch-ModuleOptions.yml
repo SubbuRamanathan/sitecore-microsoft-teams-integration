@@ -16,42 +16,51 @@ SharedFields:
         $generalSettingsItem = Get-Item -Path master: -ID "{DD896673-142D-446D-8C02-E6C52A184706}"
         $executeScriptCommand = "item:executescript(script={0},scriptDb=master)"
         
-        $connectorTab = @(
-        	@{ Tab="CONNECTOR"; Name="webhooksTitle"; Title="Teams Endpoints"; Editor="info"; ParentGroupId=1; HideOnValue="0"; }
+        $connectorsTab = @(
+        	@{ Tab="CONNECTORS"; Name="webhooksTitle"; Title="Teams Endpoints"; Editor="info"; ParentGroupId=1; HideOnValue="0"; }
         )
         
         if($webhookItems.Count -eq 0){
-           $connectorTab += @{ Tab="CONNECTOR"; Name="webhooksInfo"; Title=""; Value="No Teams Endpoint configured. Add a Teams Endpoint using the below link" ; Editor="info"; ParentGroupId=1; HideOnValue="0"; }
+           $connectorsTab += @{ Tab="CONNECTORS"; Name="webhooksInfo"; Title=""; Value="No Teams Endpoint configured. Add a Teams Endpoint using the below link" ; Editor="info"; ParentGroupId=1; HideOnValue="0"; }
         }
         
         $webhookItems | ForEach-Object { 
             $editEndPointScript = Get-Item -Path "master:$($_.Paths.FullPath)/Scripts/Edit"
             $deleteEndPointScript = Get-Item -Path "master:$($_.Paths.FullPath)/Scripts/Delete"
             $options = [ordered]@{ "Edit" = $executeScriptCommand -f $editEndPointScript.ID.ToString() ; "Delete" = $executeScriptCommand -f $deleteEndPointScript.ID.ToString() }
-            $connectorTab += @{ Tab="CONNECTOR"; Name=$_.Name; Value=$_["NickName"]; Title=""; Editor="info"; Columns=4; ParentGroupId=1; HideOnValue="0"; }
-            $connectorTab += @{ Tab="CONNECTOR"; Name="$($_.Name)_Options"; Title=""; Options=$options; Editor="link"; Columns=6; ParentGroupId=1; HideOnValue="0"; }
+            $connectorsTab += @{ Tab="CONNECTORS"; Name=$_.Name; Value=$_["NickName"]; Title=""; Editor="info"; Columns=7; ParentGroupId=1; HideOnValue="0"; }
+            $connectorsTab += @{ Tab="CONNECTORS"; Name="$($_.Name)_Options"; Title=""; Options=$options; Editor="link"; Columns=4; ParentGroupId=1; HideOnValue="0"; }
         }
         
         $addOption = [ordered]@{ "Add New Teams Endpoint" = $executeScriptCommand -f "{5BD1ACCC-E98D-49C5-953A-741501F0A5DD}" }
-        $connectorTab += @{ Tab="CONNECTOR"; Name="addEndpoint"; Title=""; Options=$addOption; Editor="link"; ParentGroupId=1; HideOnValue="0"; }
+        $connectorsTab += @{ Tab="CONNECTORS"; Name="addEndpoint"; Title=""; Options=$addOption; Editor="link"; ParentGroupId=1; HideOnValue="0"; }
         
         $preferredEditor = $generalSettingsItem.PreferredEditor.Split('|') | Foreach-Object { Get-Item -Path master: -ID $_ }
         
-        $optionsTab = @(
-            @{ Tab="OPTIONS"; Name="pagespeedApiKey"; Title="Google PageSpeed API Key"; Value=$generalSettingsItem.PageSpeedAPIKey; Placeholder="Enter Google PageSpeed Insights API Key"; ParentGroupId=1; HideOnValue="0"; },
-            @{ Tab="OPTIONS"; Name="preferredEditor"; Title="Please select preferred editor(s)";  Editor="multilist"; Tooltip="";
-                Source="DataSource=/sitecore/system/Modules/PowerShell/Script Library/Sitecore + Microsoft Teams Integration/Editor Options&DatabaseName=master"; }
+        $messageCompositionMethods = [ordered]@{"New Look"=1;"Classic"=0}
+        $appearanceTab = @(
+            @{ Tab="APPEARANCE"; Name="messageCompositionMethod"; Title="Teams Card Appearance"; Editor="radio"; Options=$messageCompositionMethods; Value=$generalSettingsItem.IsNewLookEnabled; ParentGroupId=1; HideOnValue="0"; },
+            @{ Tab="APPEARANCE"; Name="backgroundImageUrl"; Title="Teams Card Background Image (New Look)"; Value=$generalSettingsItem.BackgroundImageUrl; Placeholder="Enter the preferred Background Image Url for Teams Notification Cards"; ParentGroupId=1; HideOnValue="0"; },
+            @{ Tab="APPEARANCE"; Name="buttonColor"; Title="Teams Card Button Color (New Look)"; Value=$generalSettingsItem.ButtonColor; Placeholder="Enter the preferred HexColor code for Teams Notification Card Buttons"; ParentGroupId=1; HideOnValue="0"; },
+            @{ Tab="APPEARANCE"; Name="buttonTextColor"; Title="Teams Card Button Text Color (New Look)"; Value=$generalSettingsItem.ButtonTextColor; Placeholder="Enter the preferred HexColor code for Teams Notification Card Button Texts"; ParentGroupId=1; HideOnValue="0"; }
         )
         
-        $aboutTab = @(
-        	@{ Tab="ABOUT"; Name="About"; Value="$webhookEndPointsDescription"; Editor="info" }
+        $pageSpeedStrategies = [ordered]@{"mobile"="mobile";"desktop"="desktop"}
+        $settingsTab = @(
+            @{ Tab="SETTINGS"; Name="pagespeedApiKey"; Title="Google PageSpeed API Key"; Value=$generalSettingsItem.PageSpeedAPIKey; Placeholder="Enter Google PageSpeed Insights API Key"; ParentGroupId=1; HideOnValue="0"; },
+            @{ Tab="SETTINGS"; Name="pagespeedStrategy"; Title="PageSpeed Strategy (desktop or mobile)"; Editor="combo"; Options=$pageSpeedStrategies; Value=$generalSettingsItem.PageSpeedStrategy; ParentGroupId=1; HideOnValue="0"; },
+            @{ Tab="SETTINGS"; Name="sitemapUrl"; Title="Sitemap Url (or Sitemap Index Url)"; Value=$generalSettingsItem.SitemapUrl; Placeholder="Enter Sitemap Url or Sitemap Index Url(required for multi-site implementations)"; ParentGroupId=1; HideOnValue="0"; },
+            @{ Tab="SETTINGS"; Name="preferredEditor"; Title="Please select preferred editor(s)";  Editor="multilist"; Tooltip="";
+                Source="DataSource=/sitecore/system/Modules/PowerShell/Script Library/Sitecore + Microsoft Teams Integration/Editor Options&DatabaseName=master"; },
+                @{ Tab="SETTINGS"; Name="sitecoreOrigin"; Title="Sitecore Origin"; Value=$generalSettingsItem.SitecoreOrigin; Placeholder="Enter Sitecore Origin/Host Url"; ParentGroupId=1; HideOnValue="0"; },
+            @{ Tab="SETTINGS"; Name="pageSpeedAPICallThreshold"; Editor="number"; Title="PageSpeed Insights API call Threshold (per Publish Activity)"; Value=$generalSettingsItem.PageSpeedAPICallThreshold; Placeholder="Threshold limit beyond which the PageSpeed Insights API calls should be skipped"; ParentGroupId=1; HideOnValue="0"; }
         )
         
-        $allTabs = $connectorTab + $optionsTab + $aboutTab
+        $allTabs = $connectorsTab + $appearanceTab + $settingsTab
         
         $dialogProps = @{
             Title="Sitecore + Microsoft Teams Integration"
-            Description="Lists all the notification settings with options to configure"
+            Description="Configure Teams Endpoint(s) and notification settings"
             Width=500 
             Height=600
             OkButtonName="Save"
@@ -64,7 +73,15 @@ SharedFields:
         
         if($result -eq "ok") {
             Set-ItemProperty -Path "master:$($generalSettingsItem.ItemPath)" -Name "PageSpeedAPIKey" -Value $pagespeedApiKey
+            Set-ItemProperty -Path "master:$($generalSettingsItem.ItemPath)" -Name "PageSpeedStrategy" -Value $pagespeedStrategy
             Set-ItemProperty -Path "master:$($generalSettingsItem.ItemPath)" -Name "PreferredEditor" -Value $preferredEditor
+            Set-ItemProperty -Path "master:$($generalSettingsItem.ItemPath)" -Name "SitemapUrl" -Value $sitemapUrl
+            Set-ItemProperty -Path "master:$($generalSettingsItem.ItemPath)" -Name "SitecoreOrigin" -Value $sitecoreOrigin
+            Set-ItemProperty -Path "master:$($generalSettingsItem.ItemPath)" -Name "PageSpeedAPICallThreshold" -Value $pageSpeedAPICallThreshold
+            Set-ItemProperty -Path "master:$($generalSettingsItem.ItemPath)" -Name "IsNewLookEnabled" -Value $messageCompositionMethod
+            Set-ItemProperty -Path "master:$($generalSettingsItem.ItemPath)" -Name "BackgroundImageUrl" -Value $backgroundImageUrl
+            Set-ItemProperty -Path "master:$($generalSettingsItem.ItemPath)" -Name "ButtonColor" -Value $buttonColor
+            Set-ItemProperty -Path "master:$($generalSettingsItem.ItemPath)" -Name "ButtonTextColor" -Value $buttonTextColor
             Invoke-Javascript "window.top.location.reload()"
         }
         else{
@@ -89,11 +106,11 @@ Languages:
         sitecore\Admin
     - ID: "8cdc337e-a112-42fb-bbb4-4143751e123f"
       Hint: __Revision
-      Value: "917a3a9e-6e3c-4b61-9e34-3fe7ed7072b8"
+      Value: "e7b2bb7f-ce98-41c9-a21c-bae25430cf57"
     - ID: "badd9cf9-53e0-4d0c-bcc0-2d784c282f6a"
       Hint: __Updated by
       Value: |
         sitecore\Admin
     - ID: "d9cf14b1-fa16-4ba6-9288-e8a174d4d522"
       Hint: __Updated
-      Value: 20210601T183827Z
+      Value: 20210811T231418Z

@@ -18,30 +18,23 @@ SharedFields:
             return;
         }
         
-        Import-Function Get-HostUrl
         if($SiteContext -eq $null){
             Import-Function Get-ContextItemSite
             $SiteContext = Get-ContextItemSite $Item
         }
         
-        $alwaysIncludeServerUrl = -Not($Item.Database -eq $SiteContext.Database)
-        $hostUrl = ("https://$($SiteContext.HostName)", "$(Get-HostUrl)")[$SiteContext.HostName -eq '*']
-    
-        $result = New-UsingBlock(New-Object Sitecore.Sites.SiteContextSwitcher $SiteContext) {    
-            $urlOptions = [Sitecore.Links.LinkManager]::GetDefaultUrlOptions()
-            $urlOptions.AlwaysIncludeServerUrl = $alwaysIncludeServerUrl
-            $urlOptions.SiteResolving = $true
-            $urlOptions.Language = $Item.Language
-            $urlOptions.LanguageEmbedding = [Sitecore.Links.LinkManager]::LanguageEmbedding
-            [Sitecore.Links.LinkManager]::GetItemUrl($Item, $urlOptions)
-        }
-        
-        if($alwaysIncludeServerUrl){
+        if($SiteContext -ne $null){
+            $result = New-UsingBlock(New-Object Sitecore.Sites.SiteContextSwitcher $SiteContext) {    
+                $urlOptions = [Sitecore.Links.LinkManager]::GetDefaultUrlOptions()
+                $urlOptions.AlwaysIncludeServerUrl = $true
+                $urlOptions.SiteResolving = $true
+                $urlOptions.Language = $Item.Language
+                $urlOptions.LanguageEmbedding = [Sitecore.Links.LinkManager]::LanguageEmbedding
+                [Sitecore.Links.LinkManager]::GetItemUrl($Item, $urlOptions)
+            }
             return $result[0]
         }
-        return "$hostUrl$($result[0])"
     }
-    
 - ID: "ba3f86a2-4a1c-4d78-b63d-91c2779c1b5e"
   Hint: __Sortorder
   Value: 500
@@ -63,14 +56,14 @@ Languages:
         sitecore\Admin
     - ID: "8cdc337e-a112-42fb-bbb4-4143751e123f"
       Hint: __Revision
-      Value: "5dac0fd5-cf31-4817-a458-8d05210af97c"
+      Value: "5b41768d-ce03-455c-bf2f-890302ab151f"
     - ID: "badd9cf9-53e0-4d0c-bcc0-2d784c282f6a"
       Hint: __Updated by
       Value: |
         sitecore\Admin
     - ID: "d9cf14b1-fa16-4ba6-9288-e8a174d4d522"
       Hint: __Updated
-      Value: 20210610T235526Z
+      Value: 20210812T150448Z
 - Language: "fr-CA"
   Versions:
   - Version: 1
