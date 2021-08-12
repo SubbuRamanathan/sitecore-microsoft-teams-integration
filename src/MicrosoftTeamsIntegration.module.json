@@ -1,0 +1,32 @@
+{
+  "namespace": "Sitecore.MicrosoftTeams.Integration",
+  "references": [""],
+  "items": {
+	"includes": [
+      {
+		"name": "system",
+		"path": "/sitecore/system/Modules/PowerShell/Script Library/Sitecore + Microsoft Teams Integration",
+		"allowedPushOperations": "createUpdateAndDelete",
+		"scope": "itemAndDescendants",
+		"rules": [
+			{
+			   "path": "/Webhooks/*",
+			   "scope": "ignored"
+			}
+		]
+	  },
+      {
+		"name": "templates",
+		"path": "/sitecore/templates/Modules/Microsoft Teams Integration",
+		"allowedPushOperations": "createUpdateAndDelete",
+		"scope": "itemAndDescendants"
+	  },
+      {
+		"name": "branches",
+		"path": "/sitecore/templates/Branches/Modules",
+		"allowedPushOperations": "createUpdateAndDelete",
+		"scope": "itemAndDescendants"
+	  }
+	]
+  }
+}

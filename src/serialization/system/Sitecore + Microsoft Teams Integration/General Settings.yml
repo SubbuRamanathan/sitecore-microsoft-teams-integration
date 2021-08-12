@@ -1,0 +1,68 @@
+﻿---
+ID: "dd896673-142d-446d-8c02-e6c52a184706"
+Parent: "9d65d47d-1407-4c77-8ab1-749fb687c2cd"
+Template: "d70a23eb-913a-4b5c-a84a-b56eccb296ec"
+Path: /sitecore/system/Modules/PowerShell/Script Library/Sitecore + Microsoft Teams Integration/General Settings
+SharedFields:
+- ID: "ba3f86a2-4a1c-4d78-b63d-91c2779c1b5e"
+  Hint: __Sortorder
+  Value: 200
+Languages:
+- Language: en
+  Versions:
+  - Version: 1
+    Fields:
+    - ID: "04c37d24-81c3-4c4c-8fe9-a8b9edd48e0b"
+      Hint: PageSpeedAPIKey
+      Value: 
+    - ID: "0ee11b4a-2557-4da5-a137-cc818fd93cf6"
+      Hint: SitecoreOrigin
+      Value: 
+    - ID: "20ac2480-d2b2-4745-8608-9cce7ffa771b"
+      Hint: PageSpeedAPICallThreshold
+      Value: 5
+    - ID: "25bed78c-4957-4165-998a-ca1b52f67497"
+      Hint: __Created
+      Value: 20210518T230307Z
+    - ID: "2fd12e62-dc7d-452e-82fa-755b98b68237"
+      Hint: IsNewLookEnabled
+      Value: 1
+    - ID: "421a6799-9974-498e-bd22-8c11fad22415"
+      Hint: PreferredEditor
+      Value: |
+        {D0D36686-753F-49E0-B491-6AAE0CA28767}
+        {1D5E7056-6981-4ACF-B1D2-E043A09E57C1}
+        {F3F60E8E-4C53-4391-B520-BC521CB83EA1}
+    - ID: "52807595-0f8f-4b20-8d2a-cb71d28c6103"
+      Hint: __Owner
+      Value: |
+        sitecore\Admin
+    - ID: "5dd74568-4d4b-44c1-b513-0af5f4cda34f"
+      Hint: __Created by
+      Value: |
+        sitecore\Admin
+    - ID: "8796f311-cbaf-4ce3-b66a-ccef653bd31c"
+      Hint: ButtonTextColor
+      Value: #192d37
+    - ID: "8cdc337e-a112-42fb-bbb4-4143751e123f"
+      Hint: __Revision
+      Value: "44afdcb1-f56f-429f-9864-f953cbacef21"
+    - ID: "8da8f1b3-2a8c-4fa6-b301-c25fce3e559b"
+      Hint: BackgroundImageUrl
+      Value: 
+    - ID: "a4394a85-3c67-4b9b-8c7c-bb2a9e05d837"
+      Hint: ButtonColor
+      Value: #65acc8
+    - ID: "badd9cf9-53e0-4d0c-bcc0-2d784c282f6a"
+      Hint: __Updated by
+      Value: |
+        sitecore\Admin
+    - ID: "bf2e2999-d095-4e47-a561-58866600b769"
+      Hint: SitemapUrl
+      Value: 
+    - ID: "d9cf14b1-fa16-4ba6-9288-e8a174d4d522"
+      Hint: __Updated
+      Value: 20210812T143932Z
+    - ID: "e4eccacb-79a4-4453-a580-6d77e1ab173b"
+      Hint: PageSpeedStrategy
+      Value: mobile

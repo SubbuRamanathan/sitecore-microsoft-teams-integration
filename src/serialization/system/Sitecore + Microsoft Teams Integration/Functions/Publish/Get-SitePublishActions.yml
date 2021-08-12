@@ -1,0 +1,55 @@
+﻿---
+ID: "16080e47-5c00-49ff-b2e6-5c3e4c6cad16"
+Parent: "25a82294-f9bc-4c0b-bca0-da1e48542a83"
+Template: "dd22f1b3-bd87-4db2-9e7d-f7a496888d43"
+Path: "/sitecore/system/Modules/PowerShell/Script Library/Sitecore + Microsoft Teams Integration/Functions/Publish/Get-SitePublishActions"
+SharedFields:
+- ID: "b1a94ff0-6897-47c0-9c51-aa6acb80b1f0"
+  Hint: Script
+  Value: |
+    function Get-SitePublishActions {
+        Import-Function Get-HostUrl
+        Import-Function Compose-Action
+    
+        $generalSettingsItem = Get-Item -Path master: -ID "{DD896673-142D-446D-8C02-E6C52A184706}"
+        $hostUrl = Get-HostUrl
+        
+        $actions = ''
+        $actions += Compose-Action 'Launch Sitecore &#x279C;' "$hostUrl/sitecore"
+        
+        $encodedSitemapUrl = [System.Web.HttpUtility]::UrlEncode($generalSettingsItem.SitemapUrl)
+        if($encodedSitemapUrl.Trim() -ne ''){
+            $actions += Compose-Action 'Request Indexing &#x1F516;' "http://www.google.com/ping?sitemap=$encodedSitemapUrl"
+        }
+        
+        return $actions.TrimEnd(',')
+    }
+- ID: "ba3f86a2-4a1c-4d78-b63d-91c2779c1b5e"
+  Hint: __Sortorder
+  Value: 800
+Languages:
+- Language: en
+  Versions:
+  - Version: 1
+    Fields:
+    - ID: "25bed78c-4957-4165-998a-ca1b52f67497"
+      Hint: __Created
+      Value: 20210528T150130Z
+    - ID: "52807595-0f8f-4b20-8d2a-cb71d28c6103"
+      Hint: __Owner
+      Value: |
+        sitecore\Admin
+    - ID: "5dd74568-4d4b-44c1-b513-0af5f4cda34f"
+      Hint: __Created by
+      Value: |
+        sitecore\Admin
+    - ID: "8cdc337e-a112-42fb-bbb4-4143751e123f"
+      Hint: __Revision
+      Value: "7d0aa070-14d6-4aad-a811-2ecf99dd8f7e"
+    - ID: "badd9cf9-53e0-4d0c-bcc0-2d784c282f6a"
+      Hint: __Updated by
+      Value: |
+        sitecore\Admin
+    - ID: "d9cf14b1-fa16-4ba6-9288-e8a174d4d522"
+      Hint: __Updated
+      Value: 20210811T151529Z

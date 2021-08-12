@@ -1,0 +1,105 @@
+﻿---
+ID: "7d3c660d-8db6-43f6-8e55-0cd87deccd90"
+Parent: "6bb3459a-491c-4a7a-b8d1-ed1e223624ec"
+Template: "dd22f1b3-bd87-4db2-9e7d-f7a496888d43"
+Path: "/sitecore/system/Modules/PowerShell/Script Library/Sitecore + Microsoft Teams Integration/Functions/Workflow/Process-StatusChangeNotification"
+SharedFields:
+- ID: "b1a94ff0-6897-47c0-9c51-aa6acb80b1f0"
+  Hint: Script
+  Value: |
+    function Process-StatusChangeNotification {
+        [CmdletBinding()]
+        param(
+            [Parameter(Mandatory = $true)]
+            [ID]$WebhookID
+        )
+        
+        New-UsingBlock (New-Object -TypeName "Sitecore.SecurityModel.SecurityDisabler") {
+            Import-Function Get-WorkflowActions
+            Import-Function Send-WorkflowNotification
+        
+            $workflowEvent = $SitecoreContextItem | Get-ItemWorkflowEvent | Select-Object -Last 1
+            if($workflowEvent.Date.AddMinutes(1) -lt (Get-Date).ToUniversalTime()){
+                return;
+            }
+            
+            $previousState = Get-Item -Path "master:" -ID $workflowEvent.OldState
+            $currentState = Get-Item -Path "master:" -ID $workflowEvent.NewState
+            
+            $notificationDetails = [pscustomobject]@{ summary = ''; title = ''; subtitle = ''; themeColor = ''; userProfilePicture = ''; language = ''; comments = ''; actions = ''; itemPath = '' }
+            
+            $user = Get-User -Id $workflowEvent.User
+            $publicDomain = "https://www.sitecore.com" #Needs to be a publicly accessible domain (sitecore.com will work if using default profile pictures)
+            $notificationDetails.userProfilePicture = $publicDomain + "/~/icon/" + $user.Profile.Portrait
+            $notificationDetails.itemPath = $SitecoreContextItem.Paths.FullPath
+            $notificationDetails.language = $SitecoreContextItem.Language.Name  
+            $notificationDetails.comments = $workflowEvent.CommentFields["Comments"]
+            
+            if($currentState.Final){
+                $title = "$($user.Profile.FullName)($($user.Name)) has approved the changes made to '$($SitecoreContextItem.DisplayName)'"
+                $subtitle = "Updates are live now, please validate and modify if needed"
+                updateNotificationDetails $title $subtitle "19a5a2" (Get-WorkflowActions -IsApproved $true)
+            }
+            else{
+                 $wasAwaitingApproval = isAwaitingApproval($previousState)
+                 if($wasAwaitingApproval){
+                     $title = "$($user.Profile.FullName)($($user.Name)) has rejected the changes made to '$($SitecoreContextItem.DisplayName)'"
+                     $subtitle = "Please review and update as needed"
+                     updateNotificationDetails $title $subtitle "dc3545" (Get-WorkflowActions)
+                 }
+                 else{
+                     $title = "$($user.Profile.FullName)($($user.Name)) has transitioned '$($SitecoreContextItem.DisplayName)' from '$($previousState.Name)' state to '$($currentState.Name)' state"
+                     $subtitle = ("", "Please review and approve the changes")[(isAwaitingApproval($currentState))]
+                     updateNotificationDetails $title $subtitle "ffc107" (Get-WorkflowActions -WorkflowState $currentState)
+                 }
+            }
+            $notificationDetails.summary = $notificationDetails.title = $notificationDetails.title.Replace('\', '\\')
+            
+            Send-WorkflowNotification -WebhookID $WebhookID -NotificationDetails $notificationDetails
+        }
+    }
+    
+    function isAwaitingApproval($state){
+        if($state.Final){
+            return $false;
+        }
+        
+        $isAwaitingApproval = $false;
+        $state.Children | Get-ItemField -ReturnType Field -Name "Next state" | Foreach-Object { 
+            $isAwaitingApproval = $isAwaitingApproval -or (Get-Item master: -ID $_.Value | Get-ItemField -ReturnType Field -Name "Final" | Select-Object -Expand Value)
+        }
+        return $isAwaitingApproval
+    }
+    
+    function updateNotificationDetails($title, $subtitle, $themeColor, $actions){
+        $notificationDetails.title = $title
+        $notificationDetails.subtitle = $subtitle
+        $notificationDetails.themeColor = $themeColor
+        $notificationDetails.actions = $actions
+    }
+Languages:
+- Language: en
+  Versions:
+  - Version: 1
+    Fields:
+    - ID: "25bed78c-4957-4165-998a-ca1b52f67497"
+      Hint: __Created
+      Value: 20210528T150209Z
+    - ID: "52807595-0f8f-4b20-8d2a-cb71d28c6103"
+      Hint: __Owner
+      Value: |
+        sitecore\Admin
+    - ID: "5dd74568-4d4b-44c1-b513-0af5f4cda34f"
+      Hint: __Created by
+      Value: |
+        sitecore\Admin
+    - ID: "8cdc337e-a112-42fb-bbb4-4143751e123f"
+      Hint: __Revision
+      Value: "eb1c2d90-ec39-4cdc-a058-05483bbcc7f7"
+    - ID: "badd9cf9-53e0-4d0c-bcc0-2d784c282f6a"
+      Hint: __Updated by
+      Value: |
+        sitecore\Admin
+    - ID: "d9cf14b1-fa16-4ba6-9288-e8a174d4d522"
+      Hint: __Updated
+      Value: 20210812T153202Z

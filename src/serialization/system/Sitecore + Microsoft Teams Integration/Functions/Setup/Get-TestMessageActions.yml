@@ -1,0 +1,47 @@
+﻿---
+ID: "98d7a82f-e353-4eb1-ba5d-4167ff7c4ee8"
+Parent: "2da9e563-d99f-49ca-8e7b-b067c73c1d3f"
+Template: "dd22f1b3-bd87-4db2-9e7d-f7a496888d43"
+Path: "/sitecore/system/Modules/PowerShell/Script Library/Sitecore + Microsoft Teams Integration/Functions/Setup/Get-TestMessageActions"
+SharedFields:
+- ID: "b1a94ff0-6897-47c0-9c51-aa6acb80b1f0"
+  Hint: Script
+  Value: |
+    function Get-TestMessageActions {
+        Import-Function Compose-Action
+        
+        $actions = Compose-Action "Setup Guide <span style='font-size: 1.4em;'>&#x1F6E0;</span>" "https://github.com/SubbuRamanathan/sitecore-microsoft-teams-integration/wiki"
+        $actions += Compose-Action "Feature Request <span style='font-size: 1.4em;'>&#x2605;</span>" "https://github.com/SubbuRamanathan/sitecore-microsoft-teams-integration/issues"
+        $actions += Compose-Action "Report Issue <span style='font-size: 1.3em;'>&#x1F577;</span>" "https://github.com/SubbuRamanathan/sitecore-microsoft-teams-integration/issues"
+        
+        return $actions.TrimEnd(",")
+    }
+- ID: "ba3f86a2-4a1c-4d78-b63d-91c2779c1b5e"
+  Hint: __Sortorder
+  Value: 800
+Languages:
+- Language: en
+  Versions:
+  - Version: 1
+    Fields:
+    - ID: "25bed78c-4957-4165-998a-ca1b52f67497"
+      Hint: __Created
+      Value: 20210528T150130Z
+    - ID: "52807595-0f8f-4b20-8d2a-cb71d28c6103"
+      Hint: __Owner
+      Value: |
+        sitecore\Admin
+    - ID: "5dd74568-4d4b-44c1-b513-0af5f4cda34f"
+      Hint: __Created by
+      Value: |
+        sitecore\Admin
+    - ID: "8cdc337e-a112-42fb-bbb4-4143751e123f"
+      Hint: __Revision
+      Value: "997c95a1-17e4-4e81-bca6-d909b4027410"
+    - ID: "badd9cf9-53e0-4d0c-bcc0-2d784c282f6a"
+      Hint: __Updated by
+      Value: |
+        sitecore\Admin
+    - ID: "d9cf14b1-fa16-4ba6-9288-e8a174d4d522"
+      Hint: __Updated
+      Value: 20210809T205520Z

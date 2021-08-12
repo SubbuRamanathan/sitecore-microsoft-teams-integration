@@ -1,0 +1,34 @@
+﻿---
+ID: "6e3343e6-3698-4666-8a8e-86dcf3f99558"
+Parent: "7aa3e7b4-b8d4-4972-9b94-a82604e977f7"
+Template: "a4d94132-9d60-4b40-b079-d9c3d3746b51"
+Path: /sitecore/templates/Branches/Modules/Microsoft Teams Integration/Webhook Settings/$name
+Languages:
+- Language: en
+  Versions:
+  - Version: 1
+    Fields:
+    - ID: "25bed78c-4957-4165-998a-ca1b52f67497"
+      Hint: __Created
+      Value: 20210521T171426Z
+    - ID: "52807595-0f8f-4b20-8d2a-cb71d28c6103"
+      Hint: __Owner
+      Value: |
+        sitecore\Admin
+    - ID: "5dd74568-4d4b-44c1-b513-0af5f4cda34f"
+      Hint: __Created by
+      Value: |
+        sitecore\Admin
+    - ID: "8cdc337e-a112-42fb-bbb4-4143751e123f"
+      Hint: __Revision
+      Value: "a6f0daca-62e9-4d7a-8f1a-d5bc3943d62c"
+    - ID: "a74ddb77-391c-4361-999d-c8c69c348835"
+      Hint: NickName
+      Value: $name
+    - ID: "badd9cf9-53e0-4d0c-bcc0-2d784c282f6a"
+      Hint: __Updated by
+      Value: |
+        sitecore\Admin
+    - ID: "d9cf14b1-fa16-4ba6-9288-e8a174d4d522"
+      Hint: __Updated
+      Value: 20210531T140512Z

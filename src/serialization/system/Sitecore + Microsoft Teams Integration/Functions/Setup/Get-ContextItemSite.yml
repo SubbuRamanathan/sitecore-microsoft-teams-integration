@@ -1,0 +1,80 @@
+﻿---
+ID: "969ae67b-b08d-4820-a184-b769f9f9c8cd"
+Parent: "2da9e563-d99f-49ca-8e7b-b067c73c1d3f"
+Template: "dd22f1b3-bd87-4db2-9e7d-f7a496888d43"
+Path: "/sitecore/system/Modules/PowerShell/Script Library/Sitecore + Microsoft Teams Integration/Functions/Setup/Get-ContextItemSite"
+SharedFields:
+- ID: "b1a94ff0-6897-47c0-9c51-aa6acb80b1f0"
+  Hint: Script
+  Value: |
+    function Get-ContextItemSite {
+        [CmdletBinding()]
+        param(
+            [item]$Item
+        )
+        
+        $associatedSiteContext = [Sitecore.Sites.SiteContextFactory]::Sites | Where-Object {$Item.Paths.FullPath.StartsWith($_.RootPath + $_.StartItem, "CurrentCultureIgnoreCase")}
+        if($associatedSiteContext.Count -gt 1){
+            $closestAssociatedSiteContext = $associatedSiteContext | Where-Object { $_.HostName -ne "" -or $_.TargetHostName -ne ""}
+            if($closestAssociatedSiteContext.Count -ne 1){
+                $closestAssociatedSiteContext = $associatedSiteContext | Where-Object { $_.Database -eq $Item.Database }
+            }
+            return $closestAssociatedSiteContext[0]
+        }
+        
+        return $associatedSiteContext[0]
+    }
+- ID: "ba3f86a2-4a1c-4d78-b63d-91c2779c1b5e"
+  Hint: __Sortorder
+  Value: 500
+Languages:
+- Language: en
+  Versions:
+  - Version: 1
+    Fields:
+    - ID: "25bed78c-4957-4165-998a-ca1b52f67497"
+      Hint: __Created
+      Value: 20200725T040127Z
+    - ID: "52807595-0f8f-4b20-8d2a-cb71d28c6103"
+      Hint: __Owner
+      Value: |
+        sitecore\Admin
+    - ID: "5dd74568-4d4b-44c1-b513-0af5f4cda34f"
+      Hint: __Created by
+      Value: |
+        sitecore\Admin
+    - ID: "8cdc337e-a112-42fb-bbb4-4143751e123f"
+      Hint: __Revision
+      Value: "90ebdfba-a96b-4e2b-b1c0-d251404d7faf"
+    - ID: "badd9cf9-53e0-4d0c-bcc0-2d784c282f6a"
+      Hint: __Updated by
+      Value: |
+        sitecore\Admin
+    - ID: "d9cf14b1-fa16-4ba6-9288-e8a174d4d522"
+      Hint: __Updated
+      Value: 20210812T122746Z
+- Language: "fr-CA"
+  Versions:
+  - Version: 1
+    Fields:
+    - ID: "25bed78c-4957-4165-998a-ca1b52f67497"
+      Hint: __Created
+      Value: 20200808T184217Z
+    - ID: "52807595-0f8f-4b20-8d2a-cb71d28c6103"
+      Hint: __Owner
+      Value: |
+        sitecore\Admin
+    - ID: "5dd74568-4d4b-44c1-b513-0af5f4cda34f"
+      Hint: __Created by
+      Value: |
+        sitecore\Admin
+    - ID: "8cdc337e-a112-42fb-bbb4-4143751e123f"
+      Hint: __Revision
+      Value: "43388beb-6d6e-4f95-a6d4-a0de589be212"
+    - ID: "badd9cf9-53e0-4d0c-bcc0-2d784c282f6a"
+      Hint: __Updated by
+      Value: |
+        sitecore\Admin
+    - ID: "d9cf14b1-fa16-4ba6-9288-e8a174d4d522"
+      Hint: __Updated
+      Value: 20200808T184217Z

@@ -1,0 +1,37 @@
+﻿---
+ID: "95557cd6-9fba-43cd-873b-14a519dac82a"
+Parent: "799706b7-6443-4312-ad02-f9feaea1fee8"
+Template: "a1e282fa-0463-4504-87a4-5cc8b1ce95c1"
+Path: /sitecore/system/Modules/PowerShell/Script Library/Sitecore + Microsoft Teams Integration/Message Templates/New Look/OpenUri Action
+Languages:
+- Language: en
+  Versions:
+  - Version: 1
+    Fields:
+    - ID: "25bed78c-4957-4165-998a-ca1b52f67497"
+      Hint: __Created
+      Value: 20210531T154658Z
+    - ID: "52807595-0f8f-4b20-8d2a-cb71d28c6103"
+      Hint: __Owner
+      Value: |
+        sitecore\Admin
+    - ID: "5dd74568-4d4b-44c1-b513-0af5f4cda34f"
+      Hint: __Created by
+      Value: |
+        sitecore\Admin
+    - ID: "8cdc337e-a112-42fb-bbb4-4143751e123f"
+      Hint: __Revision
+      Value: "2c66916d-6d9d-4fdb-ae02-98c85acf69fc"
+    - ID: "939782ea-0ac1-47f3-968d-e92109dd97bf"
+      Hint: MessageSchema
+      Value: |
+        <a href=\"{url}\" style=\"border-radius:3px;box-shadow:0 4px 5px rgba(0,0,0,.3);display: inline-block !important;font: 700 12px/30px Helvetica, Clean, sans-serif;padding: 0 10px;text-decoration: none;text-shadow: 0 0 0 {buttonTextColor};background-color: white;background-color:{buttonColor} !important;color: transparent;margin-bottom: 5px;\">
+                {name}
+        </a>&nbsp;
+    - ID: "badd9cf9-53e0-4d0c-bcc0-2d784c282f6a"
+      Hint: __Updated by
+      Value: |
+        sitecore\Admin
+    - ID: "d9cf14b1-fa16-4ba6-9288-e8a174d4d522"
+      Hint: __Updated
+      Value: 20210810T111027Z

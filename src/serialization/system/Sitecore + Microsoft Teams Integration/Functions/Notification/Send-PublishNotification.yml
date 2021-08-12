@@ -1,0 +1,93 @@
+﻿---
+ID: "30d8fc85-12f7-457b-9ed1-cafb00081433"
+Parent: "1a3e4203-c1ce-414c-bdcd-51e9bcc0627b"
+Template: "dd22f1b3-bd87-4db2-9e7d-f7a496888d43"
+Path: "/sitecore/system/Modules/PowerShell/Script Library/Sitecore + Microsoft Teams Integration/Functions/Notification/Send-PublishNotification"
+SharedFields:
+- ID: "b1a94ff0-6897-47c0-9c51-aa6acb80b1f0"
+  Hint: Script
+  Value: |
+    function Send-PublishNotification {
+        [CmdletBinding()]
+        param(
+            $WebhookID,
+            $NotificationDetails
+        )
+        
+        Import-Function Send-TeamsNotification
+        Import-Function Get-Template
+        Import-Function Compose-Background
+        
+        $title = "$($notificationDetails.userProfileName)($($notificationDetails.userName)) has published '$($notificationDetails.itemName)' to '$($notificationDetails.target)'"
+        $title = $title.Replace('\', '\\')    
+        
+        $webhookItem = Get-Item -Path master: -ID $WebhookID
+        $endpoint = $webhookItem.WebhookEndpoint
+    
+        $messageSchema = Get-Template "Publish Update"
+        $message = $messageSchema -replace '{summary}', $title `
+                    -replace '{title}', $title `
+                    -replace '{subtitle}', 'The following links/items have been updated. You can view/edit the item/page(s) (or request for Google Indexing) from the actions below' `
+                    -replace '{userProfilePicture}', $NotificationDetails.userProfilePicture `
+                    -replace '{itemPath}', $NotificationDetails.itemPath `
+                    -replace '{subitems}', $NotificationDetails.subitems `
+                    -replace '{relateditems}', $NotificationDetails.relateditems `
+                    -replace '{language}', $NotificationDetails.language `
+                    -replace '{actions}', $NotificationDetails.actions `
+                    -replace "{backgroundImage}", (Compose-Background)
+                    
+        if($NotificationDetails.publishedLinksInfo.Keys.Count -gt 1){
+            $publishedLinksMessage = @()
+            $publishedLinksSchema = Get-Template "Published Link - Multilink"
+            foreach($key in $($NotificationDetails.publishedLinksInfo.Keys)){
+                $lighthouseScores = $NotificationDetails.publishedLinksInfo[$key];
+                $publishedLinksMessage += $publishedLinksSchema -replace '{modifiedLink}', $key `
+                    -replace '{progressSection}', $lighthouseScores `
+                    -replace '{rowHeight}', (('', 'height: 50px')[($lighthouseScores -ne $null -and $lighthouseScores.Trim() -ne '')]) `
+                    -replace '{linkWidth}', (('', 'width: 60%;')[($lighthouseScores -ne $null -and $lighthouseScores.Trim() -ne '')])
+            }
+            $message = $message -replace '{multiLinkProgressSection}', $publishedLinksMessage -join '' `
+                    -replace '{singleLinkProgressSection}', ''
+        }
+        else{
+            $publishedLinksMessage = 'N/A'
+            if($NotificationDetails.publishedLinksInfo.Keys.Count -eq 1){
+                $publishedLinksSchema = Get-Template "Published Link"
+                $publishedLinksMessage = $publishedLinksSchema -replace '{modifiedLink}', $NotificationDetails.publishedLinksInfo.Keys `
+                        -replace '{progressSection}', $NotificationDetails.publishedLinksInfo.Values
+            }
+            $message = $message -replace '{singleLinkProgressSection}', $publishedLinksMessage `
+                    -replace '{multiLinkProgressSection}', ''
+        }
+    
+        Send-TeamsNotification -Endpoint $endpoint -Message $message
+    }
+- ID: "ba3f86a2-4a1c-4d78-b63d-91c2779c1b5e"
+  Hint: __Sortorder
+  Value: 800
+Languages:
+- Language: en
+  Versions:
+  - Version: 1
+    Fields:
+    - ID: "25bed78c-4957-4165-998a-ca1b52f67497"
+      Hint: __Created
+      Value: 20210528T150130Z
+    - ID: "52807595-0f8f-4b20-8d2a-cb71d28c6103"
+      Hint: __Owner
+      Value: |
+        sitecore\Admin
+    - ID: "5dd74568-4d4b-44c1-b513-0af5f4cda34f"
+      Hint: __Created by
+      Value: |
+        sitecore\Admin
+    - ID: "8cdc337e-a112-42fb-bbb4-4143751e123f"
+      Hint: __Revision
+      Value: "a171444d-0e19-4de4-b4d2-6e385408034d"
+    - ID: "badd9cf9-53e0-4d0c-bcc0-2d784c282f6a"
+      Hint: __Updated by
+      Value: |
+        sitecore\Admin
+    - ID: "d9cf14b1-fa16-4ba6-9288-e8a174d4d522"
+      Hint: __Updated
+      Value: 20210812T004655Z

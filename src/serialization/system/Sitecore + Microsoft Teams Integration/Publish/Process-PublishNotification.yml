@@ -1,0 +1,156 @@
+﻿---
+ID: "b63e779e-18ec-4de5-9f9e-db896d8adc0d"
+Parent: "4e6e9680-b6f0-48b9-8c72-915ef1f30b25"
+Template: "dd22f1b3-bd87-4db2-9e7d-f7a496888d43"
+Path: "/sitecore/system/Modules/PowerShell/Script Library/Sitecore + Microsoft Teams Integration/Publish/Process-PublishNotification"
+SharedFields:
+- ID: "b1a94ff0-6897-47c0-9c51-aa6acb80b1f0"
+  Hint: Script
+  Value: |
+    $pipelineArgs = Get-Variable -Name publishContext -ValueOnly
+    
+    Import-Function Get-ItemUrl
+    Import-Function Send-PublishNotification
+    Import-Function Is-NewLookEnabled
+    Import-Function Get-LighthouseResults
+    Import-Function Get-PublishActions
+    Import-Function Get-SitePublishActions
+    Import-Function Send-SitePublishNotification
+    
+    if($publishContext.Statistics.Created -eq 0 -and $publishContext.Statistics.Updated -eq 0){
+        return;
+    }
+    
+    $webhooksItem = Get-Item -Path "master:" -ID "{AAEB319C-3BC9-411F-B0B9-721B5826AD0F}"
+    $configuredWebhooks = Get-ChildItem -Path "master:$($webhooksItem.ItemPath)" | Where-Object {-Not [string]::IsNullOrEmpty($_.PublishNotificationSettings)}
+    
+    if($configuredWebhooks.Count -eq 0){
+        return;
+    }
+    
+    $user = $publishContext.User
+    $publicDomain = "https://www.sitecore.com" #Needs to be a publicly accessible domain (sitecore.com will work if using default profile pictures)
+    if($publishContext.PublishOptions.Mode -ne [Sitecore.Publishing.PublishMode]::SingleItem){
+        $targets = @()
+        $publishContext.PublishOptions.PublishingTargets | Foreach-Object{
+            $publishingTargetItem = Get-Item -Path "master:" -ID $_
+            $targets += "$($publishingTargetItem.Name)($($publishingTargetItem.Fields['Target Database'].Value))"
+        }
+        $notificationDetails = [pscustomobject]@{ 
+            userProfileName = $user.Profile.FullName
+            userName = $user.Name
+            userProfilePicture = $publicDomain + "/~/icon/" + $user.Profile.Portrait;
+            publishMode = $publishContext.PublishOptions.Mode;
+            language = $publishContext.Languages -Join ',';
+            target = $targets -Join ',';
+            actions = Get-SitePublishActions;
+        }
+        
+        $configuredWebhooks | Foreach-Object{
+            Send-SitePublishNotification -WebhookID $_.ID -NotificationDetails $notificationDetails
+        }
+        return;
+    }
+    
+    foreach($publishingTarget in $publishContext.PublishOptions.PublishingTargets){
+        $processedItemsAndReferrers = @()
+        $publishingTargetItem = Get-Item -Path "master:" -ID $publishingTarget
+        foreach($language in $publishContext.Languages){
+            foreach($key in $publishContext.ProcessedPublishingCandidates.Keys){
+                $processedItem = Get-Item -Path "$($publishContext.PublishOptions.TargetDatabase.Name):" -ID $key.ItemId -Language $language
+                if($processedItem){
+                    $referrers = Get-ItemReferrer -Item $processedItem
+                    $processedItemsAndReferrers += $processedItem
+                    $processedItemsAndReferrers += $referrers
+                }
+            }
+        }
+    
+        $configuredWebhooks | Foreach-Object{
+            $itemsToNotify = @()
+            $publishNotificationEntries = $_.PublishNotificationSettings.Split('&');
+            for ($i=0; $i -lt $publishNotificationEntries.Length; $i++){
+                $contentLocation = [System.Web.HttpUtility]::UrlDecode($publishNotificationEntries[$i].Split('=')[0]);
+                $contentOptions = ([System.Web.HttpUtility]::UrlDecode($publishNotificationEntries[$i].Split('=')[1])).Split('|');
+                $language = $contentOptions[0];
+                $target = $contentOptions[1];
+                $subitems = $contentOptions[2];
+                
+                $itemsToNotify += $processedItemsAndReferrers | Where-Object { 
+                    ($target -eq 'All' -or $target -eq $publishingTargetItem.Name) -and 
+                    ($language -eq 'All' -or $language -eq $_.Language) -and 
+                    (($contentLocation -eq $_.ItemPath.Replace("/sitecore/", "")) -or (($subitems -eq $true) -and ($_.ItemPath -match $contentLocation)))}
+            }
+            
+            if($itemsToNotify.Length -gt 0){
+                try{
+                    $publishedLinksInfo = @{}
+                    $itemsToNotify = $itemsToNotify | Group-Object 'Id', 'Language' | %{ $_.Group | Select -First 1}
+                    $isNewLookEnabled = (Is-NewLookEnabled) -eq 1
+                    $itemsToNotify | Foreach-Object {
+                        if(Get-Layout -Item $_){
+                            $publishedUrl = Get-ItemUrl -Item $_
+                            if($publishedUrl -ne $null -and $publishedLinksInfo.Keys -notcontains $publishedUrl){
+                                $publishedLinksInfo.Add($publishedUrl, '') 
+                            }
+                        }
+                    }
+                    
+                    if($isNewLookEnabled){
+                        $generalSettingsItem = Get-Item -Path master: -ID "{DD896673-142D-446D-8C02-E6C52A184706}"
+                        if($publishedLinksInfo.Keys.Count -le $generalSettingsItem.PageSpeedAPICallThreshold){
+                            foreach($key in $($publishedLinksInfo.keys)){
+                                $publishedLinksInfo[$key] = Get-LighthouseResults $key
+                            }
+                        }
+                    }
+                }
+                catch{
+                    $publishedLinksInfo = @{}
+                    Write-Log "Fetching Updated Links failed for $($publishContext.PublishOptions.RootItem.Paths.FullPath): $($_.Exception)" -Verbose
+                }
+                
+                $notificationDetails = [pscustomobject]@{ 
+                    userProfileName = $user.Profile.FullName
+                    userName = $user.Name
+                    userProfilePicture = $publicDomain + "/~/icon/" + $user.Profile.Portrait;
+                    itemName = $publishContext.PublishOptions.RootItem.DisplayName;
+                    itemPath = $publishContext.PublishOptions.RootItem.Paths.FullPath;
+                    language = $publishContext.Languages -Join ',';
+                    subitems = $publishContext.PublishOptions.Deep;
+                    relateditems = $publishContext.PublishOptions.PublishRelatedItems;
+                    target = "$($publishingTargetItem.Name)($($publishingTargetItem.Fields['Target Database'].Value))";
+                    publishedLinksInfo = $publishedLinksInfo;
+                    actions = Get-PublishActions $publishContext.PublishOptions.RootItem;
+                }
+                
+                Send-PublishNotification -WebhookID $_.ID -NotificationDetails $notificationDetails
+            }
+        }
+    }
+Languages:
+- Language: en
+  Versions:
+  - Version: 1
+    Fields:
+    - ID: "25bed78c-4957-4165-998a-ca1b52f67497"
+      Hint: __Created
+      Value: 20210608T002310Z
+    - ID: "52807595-0f8f-4b20-8d2a-cb71d28c6103"
+      Hint: __Owner
+      Value: |
+        sitecore\Admin
+    - ID: "5dd74568-4d4b-44c1-b513-0af5f4cda34f"
+      Hint: __Created by
+      Value: |
+        sitecore\Admin
+    - ID: "8cdc337e-a112-42fb-bbb4-4143751e123f"
+      Hint: __Revision
+      Value: "0c8363f5-7c56-444e-8070-d406da0a6b34"
+    - ID: "badd9cf9-53e0-4d0c-bcc0-2d784c282f6a"
+      Hint: __Updated by
+      Value: |
+        sitecore\Admin
+    - ID: "d9cf14b1-fa16-4ba6-9288-e8a174d4d522"
+      Hint: __Updated
+      Value: 20210812T153453Z
