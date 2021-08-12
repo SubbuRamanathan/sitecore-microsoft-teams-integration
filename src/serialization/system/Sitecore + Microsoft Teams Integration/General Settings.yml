@@ -46,10 +46,10 @@ Languages:
       Value: #192d37
     - ID: "8cdc337e-a112-42fb-bbb4-4143751e123f"
       Hint: __Revision
-      Value: "44afdcb1-f56f-429f-9864-f953cbacef21"
+      Value: "b6cd8202-928f-41a1-a731-6d5002864157"
     - ID: "8da8f1b3-2a8c-4fa6-b301-c25fce3e559b"
       Hint: BackgroundImageUrl
-      Value: 
+      Value: "https://raw.githubusercontent.com/SubbuRamanathan/sitecore-microsoft-teams-integration/main/src/Sitecore.MicrosoftTeams.Integration/sitecore%20modules/MicrosoftTeamsIntegration/teams-background.png"
     - ID: "a4394a85-3c67-4b9b-8c7c-bb2a9e05d837"
       Hint: ButtonColor
       Value: #65acc8
@@ -62,7 +62,7 @@ Languages:
       Value: 
     - ID: "d9cf14b1-fa16-4ba6-9288-e8a174d4d522"
       Hint: __Updated
-      Value: 20210812T143932Z
+      Value: 20210812T190641Z
     - ID: "e4eccacb-79a4-4453-a580-6d77e1ab173b"
       Hint: PageSpeedStrategy
       Value: mobile

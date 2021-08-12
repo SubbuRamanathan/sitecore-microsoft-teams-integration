@@ -21,12 +21,12 @@ Languages:
         sitecore\Admin
     - ID: "8cdc337e-a112-42fb-bbb4-4143751e123f"
       Hint: __Revision
-      Value: "e629a85e-f407-442a-8edc-10ed2b49d753"
+      Value: "a86ce212-ed7e-4e19-80fb-aa42f482dfe0"
     - ID: "939782ea-0ac1-47f3-968d-e92109dd97bf"
       Hint: MessageSchema
       Value: |
         <div style=\"position:relative;width:25%;height:inherit;float:left;\">
-                <img width=\"1\" height=\"1\" src=\"https://subbu.ca/progress-circles.png\" style=\"display:block;position:absolute;height:inherit;object-fit:cover;object-position:{position}%;\"></img>
+                <img width=\"1\" height=\"1\" src=\"https://raw.githubusercontent.com/SubbuRamanathan/sitecore-microsoft-teams-integration/main/src/Sitecore.MicrosoftTeams.Integration/sitecore%20modules/MicrosoftTeamsIntegration/progress-circles.png\" style=\"display:block;position:absolute;height:inherit;object-fit:cover;object-position:{position}%;\"></img>
                 <span style=\"position:relative;text-align:center;height:inherit;vertical-align:middle;display:table-cell;width:1%;\">{score}</span>
                 <span style=\"opacity:0;display:table-column\">(</span>
                 <span style=\"text-align:center;width:100%;float:left;margin-top:-5px;font-size:0.8em;\">
@@ -40,4 +40,4 @@ Languages:
         sitecore\Admin
     - ID: "d9cf14b1-fa16-4ba6-9288-e8a174d4d522"
       Hint: __Updated
-      Value: 20210810T175020Z
+      Value: 20210812T190848Z
