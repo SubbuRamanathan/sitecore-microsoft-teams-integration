@@ -21,7 +21,7 @@ If you continue to use the Service after the revised Terms go into effect, then 
 
 ## Privacy Policy
 
-To understand if any information/data is collected, please check out our privacy policy available at [Privacy Policy](https://github.com/SubbuRamanathan/sitecore-microsoft-teams-integration/blob/main/privacy-policy.md).
+To understand if any information/data is collected, please check out the privacy policy available at [Privacy Policy](https://github.com/SubbuRamanathan/sitecore-microsoft-teams-integration/blob/main/privacy-policy.md).
 
 ## Third-Party Services
 
