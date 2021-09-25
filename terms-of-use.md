@@ -4,7 +4,7 @@ Last Updated: 28-Aug-2021
 
 This Terms of Use applies to all of the below elements involved in this Sitecore + Microsoft Teams integration:
 
-*   Microsoft Teams Web/Desktop/Mobile Apps ('Sitecore for Teams' connector)
+*   Microsoft Teams Web/Desktop/Mobile App ('Sitecore Connect+')
 *   Sitecore Module (installed in the user's Sitecore instance)
 
 ## Accepting these Terms
