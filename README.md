@@ -1,8 +1,6 @@
 # Sitecore + Microsoft Teams Integration
 This repository contains SPE Scripts, Config and Sitecore Items needed for sending Microsoft Teams Notifications for Sitecore Workflow Actions
 
-[![Sitecore + Microsoft Teams](https://img.youtube.com/vi/w-kASBee7MQ/0.jpg)](https://www.youtube.com/watch?v=w-kASBee7MQ)
-
 ## Purpose
 The global shift to remote working poses a wide variety of challenges, from inevitable delays in content deliveries, communication transparency, to traceability, quality, efficiency, etc. Sitecore + Teams Integration connects teams in the new virtual workspace with its rich instant notifications, actions & valuable insights.
 
