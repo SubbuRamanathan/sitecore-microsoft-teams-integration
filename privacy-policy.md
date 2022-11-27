@@ -2,7 +2,7 @@
 ## What This Policy Covers
 This Privacy Policy applies to all of the below elements involved in this Sitecore + Microsoft Teams integration:
 
-*   Microsoft Teams Web/Desktop/Mobile App ('Proconnect for Sitecore')
+*   Microsoft Teams Web/Desktop/Mobile App ('TeamConnect for Sitecore')
 *   Sitecore Module (installed in the user's Sitecore instance)
 
 ## Does this module/connector collect any information?
